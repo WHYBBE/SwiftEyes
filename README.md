@@ -4,6 +4,8 @@ A lightweight macOS menu bar app that displays a pair of googly eyes that follow
 
 Inspired by [Googly Eyes](https://sindresorhus.com/googly-eyes) by Sindre Sorhus.
 
+[中文文档](README_CN.md)
+
 ![macOS 13+](https://img.shields.io/badge/macOS-13.0+-blue)
 
 ## Features
@@ -127,4 +129,4 @@ Sources/SwiftEyes/
 
 ## License
 
-MIT
+[MIT](LICENSE)

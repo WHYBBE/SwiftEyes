@@ -1,6 +1,4 @@
-import SwiftUI
 import AppKit
-import Combine
 
 final class StatusBarController: NSObject {
     static let shared = StatusBarController()
@@ -13,26 +11,23 @@ final class StatusBarController: NSObject {
     private var contextMenu: NSMenu!
     private var rightClickMonitor: Any?
     private var frameObserver: Any?
-    private var configCancellable: AnyCancellable?
+    private var eyesView: GooglyEyesNSView?
+    private var updateCentersScheduled = false
 
     override private init() { super.init() }
 
     func setup() {
         rebuildStatusItem()
 
-        configCancellable = EyesConfig.shared.$totalItemWidth
-            .receive(on: RunLoop.main)
-            .sink { [weak self] newWidth in
-                guard let self, let item = self.statusItem else { return }
-                if abs(item.length - newWidth) > 0.5 {
-                    item.length = newWidth
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-                        self?.updateEyeCenters()
-                    }
-                }
-                self.mouseTracker.maxPupilOffset = EyesConfig.shared.maxPupilOffset
-                self.updateEyeCenters()
+        EyesConfig.shared.onChange = { [weak self] in
+            guard let self, let item = self.statusItem else { return }
+            let newWidth = EyesConfig.shared.totalItemWidth
+            if abs(item.length - newWidth) > 0.5 {
+                item.length = newWidth
             }
+            self.mouseTracker.maxPupilOffset = EyesConfig.shared.maxPupilOffset
+            self.scheduleUpdateEyeCenters()
+        }
     }
 
     private func rebuildStatusItem() {
@@ -51,10 +46,14 @@ final class StatusBarController: NSObject {
         button.target = self
         button.sendAction(on: [.leftMouseUp])
 
-        let hostingView = NSHostingView(rootView: GooglyEyesView())
-        hostingView.frame = button.bounds
-        hostingView.autoresizingMask = [.width, .height]
-        button.addSubview(hostingView)
+        let view = GooglyEyesNSView()
+        view.mouseTracker = mouseTracker
+        view.eyesState = eyesState
+        view.eyesConfig = EyesConfig.shared
+        view.frame = button.bounds
+        view.autoresizingMask = [.width, .height]
+        button.addSubview(view)
+        eyesView = view
 
         buildContextMenu()
 
@@ -64,7 +63,7 @@ final class StatusBarController: NSObject {
 
         frameObserver = NotificationCenter.default.addObserver(
             forName: NSView.frameDidChangeNotification, object: button, queue: .main
-        ) { [weak self] _ in self?.updateEyeCenters() }
+        ) { [weak self] _ in self?.scheduleUpdateEyeCenters() }
 
         mouseTracker.startTracking()
         mouseTracker.maxPupilOffset = EyesConfig.shared.maxPupilOffset
@@ -73,6 +72,15 @@ final class StatusBarController: NSObject {
             self?.updateEyeCenters()
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.updateEyeCenters()
+        }
+    }
+
+    private func scheduleUpdateEyeCenters() {
+        guard !updateCentersScheduled else { return }
+        updateCentersScheduled = true
+        DispatchQueue.main.async { [weak self] in
+            self?.updateCentersScheduled = false
             self?.updateEyeCenters()
         }
     }

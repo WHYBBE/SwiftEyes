@@ -1,5 +1,4 @@
-import SwiftUI
-import Combine
+import Foundation
 import ServiceManagement
 
 final class EyesConfig: ObservableObject {
@@ -24,9 +23,9 @@ final class EyesConfig: ObservableObject {
 
     let isInAppBundle: Bool
 
-    @Published var maxPupilOffset: Double = 0
-    @Published var totalItemWidth: Double = 0
-    @Published var itemHeight: Double = 0
+    var maxPupilOffset: Double = 0
+    var totalItemWidth: Double = 0
+    var itemHeight: Double = 0
 
     var onChange: (() -> Void)?
 

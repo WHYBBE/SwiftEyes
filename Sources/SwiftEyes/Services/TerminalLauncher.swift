@@ -7,8 +7,19 @@ final class TerminalLauncher {
             ?? "/System/Applications/Utilities/Terminal.app"
     }
 
+    private var cachedPath: String?
+    private var cacheTime: TimeInterval = 0
+    private let cacheTTL: TimeInterval = 2.0
+
     var finderPath: String? {
-        getFrontFinderPath()
+        let now = CACurrentMediaTime()
+        if let cached = cachedPath, now - cacheTime < cacheTTL {
+            return cached.isEmpty ? nil : cached
+        }
+        let path = getFrontFinderPath() ?? ""
+        cachedPath = path
+        cacheTime = now
+        return path.isEmpty ? nil : path
     }
 
     func toggle() {

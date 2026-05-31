@@ -1,11 +1,10 @@
-import SwiftUI
-import Combine
+import AppKit
 
-final class MouseTracker: ObservableObject {
+final class MouseTracker {
     static let shared = MouseTracker()
 
-    @Published var leftPupilOffset: CGPoint = .zero
-    @Published var rightPupilOffset: CGPoint = .zero
+    var leftPupilOffset: CGPoint = .zero
+    var rightPupilOffset: CGPoint = .zero
 
     var onOffsetChanged: (() -> Void)?
 
@@ -59,12 +58,9 @@ final class MouseTracker: ObservableObject {
         prevLeft = left
         prevRight = right
 
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            if leftChanged { self.leftPupilOffset = left }
-            if rightChanged { self.rightPupilOffset = right }
-            self.onOffsetChanged?()
-        }
+        if leftChanged { leftPupilOffset = left }
+        if rightChanged { rightPupilOffset = right }
+        onOffsetChanged?()
     }
 
     private func computeOffset(from mouse: CGPoint, to center: CGPoint) -> CGPoint {

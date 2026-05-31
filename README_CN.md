@@ -88,6 +88,12 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 
 > 左眼是瞬时动作（打开终端），无持续激活状态。右眼在防睡眠激活时显示红色发光。
 
+### 截图
+
+| 左键眨眼 | 防睡眠（红色发光） | 设置 |
+|---|---|---|
+| ![Left Button Clicked](docs/Left%20Button%20Clicked.png) | ![Prevent Sleep](docs/Prevent%20Sleep.png) | ![Setting](docs/Setting.png) |
+
 ## 设置项
 
 | 设置 | 默认值 | 范围 |

@@ -90,6 +90,12 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 
 > The left eye is a one-shot action (open terminal), so it has no persistent active state. The right eye shows a red glow while sleep prevention is active.
 
+### Screenshots
+
+| Left-click blink | Prevent sleep (red glow) | Settings |
+|---|---|---|
+| ![Left Button Clicked](docs/Left%20Button%20Clicked.png) | ![Prevent Sleep](docs/Prevent%20Sleep.png) | ![Setting](docs/Setting.png) |
+
 ## Settings
 
 | Setting | Default | Range |

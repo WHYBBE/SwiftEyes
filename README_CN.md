@@ -4,6 +4,10 @@
 
 灵感来自 Sindre Sorhus 的 [Googly Eyes](https://sindresorhus.com/googly-eyes)。
 
+[English](README.md)
+
+<img src="docs/Icon.png" width="128">
+
 ![macOS 13+](https://img.shields.io/badge/macOS-13.0+-blue)
 
 ![Normal1](docs/Normal1.png) ![Normal2](docs/Normal2.png) ![Normal3](docs/Normal3.png)
@@ -22,7 +26,7 @@
   - 退出
 - **可自定义** — 通过设置调整眼睛大小、瞳孔大小、眼距
 - **开机自启** — 在设置中启用（需要 .app bundle）
-- **极低资源占用** — 空闲时 CPU ≈ 0%，内存 ≈ 55MB（Release 构建）
+- **极低资源占用** — 空闲时 CPU ≈ 0%
 
 ## 系统要求
 
@@ -104,6 +108,7 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | 瞳孔大小 | 5 | 2–10 |
 | 眼距 | 6 | 0–20 |
 | 终端应用 | Terminal.app | 任意 .app 路径 |
+| 语言 | 中文 | 中文 / English |
 | 开机自启 | 关 | 开/关 |
 
 ## 架构
@@ -111,8 +116,9 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 ```
 Sources/SwiftEyes/
 ├── SwiftEyesApp.swift              # @main 入口 + AppDelegate
+├── Assets.xcassets/               # 应用图标 & 资源目录
 ├── StatusBar/
-│   └── StatusBarController.swift   # NSStatusItem + NSHostingView + 右键菜单
+│   └── StatusBarController.swift   # NSStatusItem + GooglyEyesNSView + 右键菜单
 ├── Views/
 │   ├── GooglyEyesView.swift        # 基于 NSView 的眼睛绘制 (Core Graphics)
 │   ├── SettingsView.swift          # SwiftUI 设置表单
@@ -122,16 +128,21 @@ Sources/SwiftEyes/
     ├── EyesState.swift             # 眨眼和激活状态（全局事件监听）
     ├── MouseTracker.swift          # 全局鼠标追踪（节流）
     ├── TerminalLauncher.swift      # Finder 路径 + 终端启动
-    └── SleepPreventer.swift        # IOKit IOPMAssertion
+    ├── SleepPreventer.swift        # IOKit IOPMAssertion
+    └── L10n.swift                  # 中英文本地化
 ```
 
 ### 关键设计
 
-- **NSView 绘制** 而非 SwiftUI Canvas — 避免 SwiftUI 重渲染开销；仅在状态实际变化时触发 `needsDisplay`
-- **鼠标追踪节流 ~12fps** 并去重 — 最小化 CPU 占用
-- **IOKit 断言** 仅在防睡眠激活时持有，关闭时立即释放
-- **AppleScript** 获取 Finder 路径仅在用户操作时执行，不轮询
-- **设置窗口打开时** 临时切换 `NSApp.setActivationPolicy(.regular)` 使窗口到前台，关闭时切回 `.accessory`
+- **NSView + Core Graphics** — 通过 `NSView.draw()` + `needsDisplay` 直接绘制，无 SwiftUI diffing 或 hosting 层开销
+- **节流鼠标追踪** — 全局 `NSEvent` 监听 ~12fps 并去重；`onOffsetChanged` 回调仅在瞳孔位置实际变化时触发重绘
+- **热路径无 Combine** — `MouseTracker` 和 `EyesState` 使用普通属性 + 回调替代 `@Published`/`ObservableObject`，消除每帧 Combine 管道开销
+- **合并布局更新** — `scheduleUpdateEyeCenters()` 将同一 runloop 内的坐标重计算合并，避免拖动滑块时重复调用
+- **IOKit 断言** — `IOPMAssertionCreateWithName` 仅在防睡眠激活时持有，关闭时立即释放
+- **AppleScript 缓存** — Finder 路径结果缓存 2 秒，空闲时不执行 AppleScript
+- **静态 CGColor** — 眼睛颜色预转换为 `CGColor` 常量，避免每帧 `NSColor.cgColor` 桥接
+- **设置窗口** 临时切换 `NSApp.setActivationPolicy(.regular)` 使窗口到前台，关闭时切回 `.accessory`
+- **L10n 字典** — 内存中翻译表按语言代码索引，无 .strings 文件；`language` 通过 UserDefaults 持久化
 
 ## 许可证
 

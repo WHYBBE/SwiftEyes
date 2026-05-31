@@ -6,6 +6,8 @@ Inspired by [Googly Eyes](https://sindresorhus.com/googly-eyes) by Sindre Sorhus
 
 [中文文档](README_CN.md)
 
+<img src="docs/Icon.png" width="128">
+
 ![macOS 13+](https://img.shields.io/badge/macOS-13.0+-blue)
 
 ![Normal1](docs/Normal1.png) ![Normal2](docs/Normal2.png) ![Normal3](docs/Normal3.png)
@@ -24,7 +26,7 @@ Inspired by [Googly Eyes](https://sindresorhus.com/googly-eyes) by Sindre Sorhus
   - Quit
 - **Configurable** — Adjust eye size, pupil size, and eye gap via Settings
 - **Launch at Login** — Enable auto-start in Settings (requires .app bundle)
-- **Minimal resources** — ~0% CPU when idle, ~55MB memory (Release build)
+- **Minimal resources** — ~0% CPU when idle
 
 ## Requirements
 
@@ -76,11 +78,11 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | Click right eye area on menu bar | Toggle: prevent Mac from sleeping |
 | Right-click menu bar icon | Context menu |
 | **Context menu** | |
-| ↳ 当前路径 / Copy Path | Show & copy Finder's front window path |
-| ↳ 在此打开终端 | Open terminal at Finder path |
-| ↳ 防睡眠: 开启/关闭 | Toggle sleep prevention |
-| ↳ 设置 | Open settings window |
-| ↳ 退出 | Quit app |
+| ↳ Current Path / Copy Path | Show & copy Finder's front window path |
+| ↳ Open Terminal Here | Open terminal at Finder path |
+| ↳ Prevent Sleep: On/Off | Toggle sleep prevention |
+| ↳ Settings | Open settings window |
+| ↳ Quit | Quit app |
 
 ## Visual Indicators
 
@@ -106,6 +108,7 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | Pupil size | 5 | 2–10 |
 | Eye gap | 6 | 0–20 |
 | Terminal app | Terminal.app | Any .app path |
+| Language | 中文 | 中文 / English |
 | Launch at login | Off | On/Off |
 
 ## Architecture
@@ -113,8 +116,9 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 ```
 Sources/SwiftEyes/
 ├── SwiftEyesApp.swift              # @main entry + AppDelegate
+├── Assets.xcassets/               # App icon & asset catalog
 ├── StatusBar/
-│   └── StatusBarController.swift   # NSStatusItem + NSHostingView + context menu
+│   └── StatusBarController.swift   # NSStatusItem + GooglyEyesNSView + context menu
 ├── Views/
 │   ├── GooglyEyesView.swift        # NSView-based eye drawing (Core Graphics)
 │   ├── SettingsView.swift          # SwiftUI settings form
@@ -124,16 +128,21 @@ Sources/SwiftEyes/
     ├── EyesState.swift             # Blink & active state (global monitors)
     ├── MouseTracker.swift          # Global mouse tracking (throttled)
     ├── TerminalLauncher.swift      # Finder path + terminal launch
-    └── SleepPreventer.swift        # IOKit IOPMAssertion
+    ├── SleepPreventer.swift        # IOKit IOPMAssertion
+    └── L10n.swift                  # Localization (Chinese / English)
 ```
 
 ### Key Design Decisions
 
-- **NSView drawing** instead of SwiftUI Canvas — avoids SwiftUI re-render overhead; `needsDisplay` triggered only on actual state change
-- **Mouse tracking throttled at ~12fps** with change deduplication — minimizes CPU usage
-- **IOKit assertion** held only while sleep prevention is active; released immediately on toggle off
-- **AppleScript** for Finder path executed only on user action, never polled
+- **NSView + Core Graphics** — Direct drawing via `NSView.draw()` with `needsDisplay`, no SwiftUI diffing or hosting layer overhead
+- **Throttled mouse tracking** — Global `NSEvent` monitor at ~12fps with offset deduplication; `onOffsetChanged` callback triggers redraw only when pupil position actually changes
+- **No Combine in hot path** — `MouseTracker` and `EyesState` use plain properties + callbacks instead of `@Published`/`ObservableObject`, eliminating Combine pipeline overhead per frame
+- **Coalesced layout updates** — `scheduleUpdateEyeCenters()` batches same-runloop coordinate recalculations when dragging settings sliders
+- **IOKit assertion** — `IOPMAssertionCreateWithName` held only while sleep prevention is active; released immediately on toggle off
+- **Cached AppleScript** — Finder path result cached with 2-second TTL; AppleScript never executed on idle
+- **Static CGColor constants** — Eye colors pre-converted to `CGColor` once, avoiding per-frame `NSColor.cgColor` bridging
 - **`NSApp.setActivationPolicy(.regular)`** temporarily when settings window opens, `.accessory` when closed — keeps the app out of the Dock while allowing settings to come to front
+- **L10n dictionary** — In-memory translation table keyed by language code, no .strings files; `language` persisted via UserDefaults
 
 ## License
 

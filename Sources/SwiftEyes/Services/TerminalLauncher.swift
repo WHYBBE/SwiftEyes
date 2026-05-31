@@ -7,6 +7,10 @@ final class TerminalLauncher {
             ?? "/System/Applications/Utilities/Terminal.app"
     }
 
+    var finderPath: String? {
+        getFrontFinderPath()
+    }
+
     func toggle() {
         launchTerminalAtFinderPath()
     }

@@ -119,6 +119,21 @@ final class StatusBarController: NSObject {
 
     private func buildContextMenu() {
         contextMenu = NSMenu()
+        contextMenu.delegate = self
+
+        let finderPath = terminalLauncher.finderPath ?? "无"
+        let pathItem = NSMenuItem(title: "Finder: \(finderPath)", action: #selector(copyFinderPath), keyEquivalent: "")
+        pathItem.target = self
+        pathItem.toolTip = "点击复制路径"
+        contextMenu.addItem(pathItem)
+
+        let sleepTitle = sleepPreventer.isActive ? "防睡眠: 开启" : "防睡眠: 关闭"
+        let sleepItem = NSMenuItem(title: sleepTitle, action: nil, keyEquivalent: "")
+        sleepItem.isEnabled = false
+        contextMenu.addItem(sleepItem)
+
+        contextMenu.addItem(NSMenuItem.separator())
+
         let settingsItem = NSMenuItem(title: "设置...", action: #selector(openSettings), keyEquivalent: ",")
         settingsItem.target = self
         contextMenu.addItem(settingsItem)
@@ -142,11 +157,26 @@ final class StatusBarController: NSObject {
         eyesState.rightEyeActive = sleepPreventer.isActive
     }
 
+    @objc private func copyFinderPath() {
+        let path = terminalLauncher.finderPath ?? ""
+        if !path.isEmpty {
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(path, forType: .string)
+        }
+    }
+
     @objc private func openSettings() {
         SettingsWindowController.shared.show()
     }
 
     @objc private func quitApp() {
         NSApp.terminate(nil)
+    }
+}
+
+extension StatusBarController: NSMenuDelegate {
+    func menuWillOpen(_ menu: NSMenu) {
+        menu.items.removeAll()
+        buildContextMenu()
     }
 }

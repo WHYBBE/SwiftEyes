@@ -15,7 +15,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let statusBarController = StatusBarController.shared
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory)
         statusBarController.setup()
     }
 

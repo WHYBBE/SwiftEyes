@@ -1,0 +1,327 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10001 /* SwiftEyesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001; };
+		A10002 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002; };
+		A10003 /* GooglyEyesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003; };
+		A10004 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004; };
+		A10005 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005; };
+		A10006 /* MouseTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006; };
+		A10007 /* EyesState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007; };
+		A10008 /* TerminalLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008; };
+		A10009 /* SleepPreventer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009; };
+		A10010 /* EyesConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C10001 /* SwiftEyes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftEyes.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10001 /* SwiftEyesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftEyesApp.swift; sourceTree = "<group>"; };
+		B10002 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
+		B10003 /* GooglyEyesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GooglyEyesView.swift; sourceTree = "<group>"; };
+		B10004 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B10005 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		B10006 /* MouseTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseTracker.swift; sourceTree = "<group>"; };
+		B10007 /* EyesState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyesState.swift; sourceTree = "<group>"; };
+		B10008 /* TerminalLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalLauncher.swift; sourceTree = "<group>"; };
+		B10009 /* SleepPreventer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepPreventer.swift; sourceTree = "<group>"; };
+		B10010 /* EyesConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyesConfig.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D10001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E10000 = {
+			isa = PBXGroup;
+			children = (
+				E10001,
+				E10005,
+				E10006,
+			);
+			sourceTree = "<group>";
+		};
+		E10001 /* SwiftEyes */ = {
+			isa = PBXGroup;
+			children = (
+				B10001,
+				E10002,
+				E10003,
+				E10004,
+			);
+			path = "Sources/SwiftEyes";
+			sourceTree = "<group>";
+		};
+		E10002 /* StatusBar */ = {
+			isa = PBXGroup;
+			children = (
+				B10002,
+			);
+			path = StatusBar;
+			sourceTree = "<group>";
+		};
+		E10003 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B10003,
+				B10004,
+				B10005,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E10004 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10006,
+				B10007,
+				B10008,
+				B10009,
+				B10010,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E10005 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C10001,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E10006 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F10001 /* SwiftEyes */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = G10003;
+			buildPhases = (
+				D10002,
+				D10001,
+				D10003,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SwiftEyes;
+			productName = SwiftEyes;
+			productReference = C10001;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		G10000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					F10001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = G10001;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E10000;
+			productRefGroup = E10005;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F10001,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D10003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D10002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001,
+				A10002,
+				A10003,
+				A10004,
+				A10005,
+				A10006,
+				A10007,
+				A10008,
+				A10009,
+				A10010,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		H10001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		H10002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		H10003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Sources/SwiftEyes/SwiftEyes.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Sources/SwiftEyes/Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.swift-eyes.app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		H10004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Sources/SwiftEyes/SwiftEyes.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Sources/SwiftEyes/Info.plist";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.swift-eyes.app";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		G10001 /* Build configuration list for PBXProject "SwiftEyes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				H10001,
+				H10002,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		G10003 /* Build configuration list for PBXNativeTarget "SwiftEyes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				H10003,
+				H10004,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = G10000;
+	schemeURL = "xcodeproj://../SwiftEyes.xcshareddata/xcschemes/SwiftEyes.xcscheme";
+}

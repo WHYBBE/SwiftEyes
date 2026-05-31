@@ -21,6 +21,10 @@ final class EyesConfig: ObservableObject {
         }
     }
 
+    @Published var language: String {
+        didSet { UserDefaults.standard.set(language, forKey: "language"); onChange?() }
+    }
+
     let isInAppBundle: Bool
 
     var maxPupilOffset: Double = 0
@@ -35,6 +39,7 @@ final class EyesConfig: ObservableObject {
         pupilRadius = UserDefaults.standard.object(forKey: "pupilRadius") as? Double ?? 5
         eyeGap = UserDefaults.standard.object(forKey: "eyeGap") as? Double ?? 6
         launchAtLogin = isInAppBundle && (UserDefaults.standard.object(forKey: "launchAtLogin") as? Bool ?? false)
+        language = UserDefaults.standard.string(forKey: "language") ?? "zh"
         updateDerived()
     }
 

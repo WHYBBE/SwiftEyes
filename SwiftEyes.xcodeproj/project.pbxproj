@@ -17,6 +17,7 @@
 		A10008 /* TerminalLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008; };
 		A10009 /* SleepPreventer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009; };
 		A10010 /* EyesConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010; };
+		A10011 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		B10008 /* TerminalLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalLauncher.swift; sourceTree = "<group>"; };
 		B10009 /* SleepPreventer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepPreventer.swift; sourceTree = "<group>"; };
 		B10010 /* EyesConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyesConfig.swift; sourceTree = "<group>"; };
+		B10011 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +92,7 @@
 				B10008,
 				B10009,
 				B10010,
+				B10011,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -187,6 +190,7 @@
 				A10008,
 				A10009,
 				A10010,
+				A10011,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -134,34 +134,34 @@ final class StatusBarController: NSObject {
     private func rebuildMenuItems(_ menu: NSMenu) {
         menu.items.removeAll()
 
-        let finderPath = terminalLauncher.finderPath ?? "无"
+        let finderPath = terminalLauncher.finderPath ?? L10n.tr("none")
 
-        let pathLabel = NSMenuItem(title: "当前路径: \(finderPath)", action: nil, keyEquivalent: "")
+        let pathLabel = NSMenuItem(title: L10n.tr("menu_path_label", finderPath), action: nil, keyEquivalent: "")
         pathLabel.isEnabled = false
         menu.addItem(pathLabel)
 
-        let copyItem = NSMenuItem(title: "复制路径", action: #selector(copyFinderPath), keyEquivalent: "c")
+        let copyItem = NSMenuItem(title: L10n.tr("menu_copy_path"), action: #selector(copyFinderPath), keyEquivalent: "c")
         copyItem.target = self
         menu.addItem(copyItem)
 
-        let terminalItem = NSMenuItem(title: "在此打开终端", action: #selector(openTerminalHere), keyEquivalent: "t")
+        let terminalItem = NSMenuItem(title: L10n.tr("menu_open_terminal"), action: #selector(openTerminalHere), keyEquivalent: "t")
         terminalItem.target = self
         menu.addItem(terminalItem)
 
         menu.addItem(NSMenuItem.separator())
 
-        let sleepTitle = sleepPreventer.isActive ? "防睡眠: 开启" : "防睡眠: 关闭"
+        let sleepTitle = sleepPreventer.isActive ? L10n.tr("menu_sleep_on") : L10n.tr("menu_sleep_off")
         let sleepItem = NSMenuItem(title: sleepTitle, action: #selector(toggleSleepPrevention), keyEquivalent: "s")
         sleepItem.target = self
         menu.addItem(sleepItem)
 
         menu.addItem(NSMenuItem.separator())
 
-        let settingsItem = NSMenuItem(title: "设置...", action: #selector(openSettings), keyEquivalent: ",")
+        let settingsItem = NSMenuItem(title: L10n.tr("menu_settings"), action: #selector(openSettings), keyEquivalent: ",")
         settingsItem.target = self
         menu.addItem(settingsItem)
         menu.addItem(NSMenuItem.separator())
-        let quitItem = NSMenuItem(title: "退出 SwiftEyes", action: #selector(quitApp), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: L10n.tr("menu_quit"), action: #selector(quitApp), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
     }

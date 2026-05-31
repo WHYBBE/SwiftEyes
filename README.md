@@ -28,7 +28,7 @@ Made with [OpenCode](https://opencode.ai) / GLM 5.1 Vibe Coding. Thanks to Zhoum
   - Quit
 - **Configurable** — Adjust eye size, pupil size, and eye gap via Settings
 - **Launch at Login** — Enable auto-start in Settings (requires .app bundle)
-- **Minimal resources** — ~0% CPU when idle
+- **Minimal resources** — ~0% CPU when idle, only 20–40MB memory
 
 ## Requirements
 

@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import Combine
+import Darwin
 
 final class SettingsWindowController: NSObject, NSWindowDelegate {
     static let shared = SettingsWindowController()
@@ -46,5 +47,6 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         configCancellable = nil
         NSApp.setActivationPolicy(.accessory)
         window = nil
+        malloc_zone_pressure_relief(nil, 0)
     }
 }

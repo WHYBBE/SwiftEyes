@@ -33,6 +33,8 @@ final class EyesConfig: ObservableObject {
 
     var onChange: (() -> Void)?
 
+    static let didChangeNotification = Notification.Name("EyesConfig.didChange")
+
     private init() {
         isInAppBundle = Bundle.main.bundleURL.pathExtension == "app"
         eyeRadius = UserDefaults.standard.object(forKey: "eyeRadius") as? Double ?? 11
@@ -58,5 +60,6 @@ final class EyesConfig: ObservableObject {
         totalItemWidth = eyeRadius * 2 * 2 + eyeGap
         itemHeight = eyeRadius * 2 + 4
         onChange?()
+        NotificationCenter.default.post(name: Self.didChangeNotification, object: self)
     }
 }

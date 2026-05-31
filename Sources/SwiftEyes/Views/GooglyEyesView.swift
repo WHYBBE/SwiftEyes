@@ -7,15 +7,9 @@ final class GooglyEyesNSView: NSView {
     var eyesState: EyesState! {
         didSet { eyesState.onChange = { [weak self] in self?.needsDisplay = true } }
     }
-    var eyesConfig: EyesConfig! {
-        didSet {
-            let prev = eyesConfig.onChange
-            eyesConfig.onChange = { [weak self] in
-                self?.needsDisplay = true
-                prev?()
-            }
-        }
-    }
+    var eyesConfig: EyesConfig!
+
+    private var configObserver: NSObjectProtocol?
 
     private static let white70 = NSColor.white.withAlphaComponent(0.7).cgColor
     private static let black = NSColor.black.cgColor
@@ -25,9 +19,17 @@ final class GooglyEyesNSView: NSView {
         super.init(frame: frame)
         wantsLayer = true
         layer?.backgroundColor = .clear
+
+        configObserver = NotificationCenter.default.addObserver(
+            forName: EyesConfig.didChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in self?.needsDisplay = true }
     }
 
     required init?(coder: NSCoder) { fatalError() }
+
+    deinit {
+        if let o = configObserver { NotificationCenter.default.removeObserver(o) }
+    }
 
     override func draw(_ dirtyRect: NSRect) {
         guard let ctx = NSGraphicsContext.current?.cgContext else { return }

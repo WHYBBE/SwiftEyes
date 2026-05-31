@@ -45,5 +45,6 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         configCancellable = nil
         NSApp.setActivationPolicy(.accessory)
+        window = nil
     }
 }

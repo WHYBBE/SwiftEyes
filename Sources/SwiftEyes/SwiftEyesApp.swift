@@ -21,5 +21,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         MouseTracker.shared.stopTracking()
+        EyesState.shared.cleanup()
     }
 }

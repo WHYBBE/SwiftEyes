@@ -27,7 +27,7 @@ final class TerminalLauncher {
     }
 
     func launchTerminalAtFinderPath() {
-        guard let path = getFrontFinderPath() else {
+        guard let path = finderPath else {
             openTerminal(at: NSHomeDirectory())
             return
         }

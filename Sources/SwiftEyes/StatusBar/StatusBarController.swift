@@ -31,6 +31,15 @@ final class StatusBarController: NSObject {
     }
 
     private func rebuildStatusItem() {
+        if let m = rightClickMonitor {
+            NSEvent.removeMonitor(m)
+            rightClickMonitor = nil
+        }
+        if let o = frameObserver {
+            NotificationCenter.default.removeObserver(o)
+            frameObserver = nil
+        }
+
         let totalWidth = EyesConfig.shared.totalItemWidth
         statusItem = NSStatusBar.system.statusItem(withLength: totalWidth)
 

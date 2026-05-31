@@ -8,7 +8,13 @@ final class GooglyEyesNSView: NSView {
         didSet { eyesState.onChange = { [weak self] in self?.needsDisplay = true } }
     }
     var eyesConfig: EyesConfig! {
-        didSet { eyesConfig.onChange = { [weak self] in self?.needsDisplay = true } }
+        didSet {
+            let prev = eyesConfig.onChange
+            eyesConfig.onChange = { [weak self] in
+                self?.needsDisplay = true
+                prev?()
+            }
+        }
     }
 
     private static let white70 = NSColor.white.withAlphaComponent(0.7).cgColor

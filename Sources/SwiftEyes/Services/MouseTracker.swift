@@ -24,7 +24,9 @@ final class MouseTracker {
     func startTracking() {
         guard monitor == nil else { return }
         monitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
-            self?.updatePupilPositions()
+            autoreleasepool {
+                self?.updatePupilPositions()
+            }
         }
     }
 

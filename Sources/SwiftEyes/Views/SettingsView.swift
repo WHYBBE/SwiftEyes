@@ -13,6 +13,8 @@ struct SettingsView: View {
         ("Hyper", "/Applications/Hyper.app"),
     ]
 
+    private var l: String { config.language }
+
     var body: some View {
         Form {
             Section(L10n.tr("appearance")) {
@@ -84,5 +86,6 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .frame(width: 440, height: 400)
+        .id(l)
     }
 }

@@ -22,16 +22,26 @@ final class EyesState {
 
     private init() {
         globalLeftDownMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [weak self] _ in
-            self?.leftBlink = true
+            autoreleasepool { self?.leftBlink = true }
         }
         globalLeftUpMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseUp) { [weak self] _ in
-            self?.leftBlink = false
+            autoreleasepool { self?.leftBlink = false }
         }
         globalRightDownMonitor = NSEvent.addGlobalMonitorForEvents(matching: .rightMouseDown) { [weak self] _ in
-            self?.rightBlink = true
+            autoreleasepool { self?.rightBlink = true }
         }
         globalRightUpMonitor = NSEvent.addGlobalMonitorForEvents(matching: .rightMouseUp) { [weak self] _ in
-            self?.rightBlink = false
+            autoreleasepool { self?.rightBlink = false }
         }
+    }
+
+    func cleanup() {
+        [globalLeftDownMonitor, globalLeftUpMonitor, globalRightDownMonitor, globalRightUpMonitor].forEach {
+            if let m = $0 { NSEvent.removeMonitor(m) }
+        }
+        globalLeftDownMonitor = nil
+        globalLeftUpMonitor = nil
+        globalRightDownMonitor = nil
+        globalRightUpMonitor = nil
     }
 }

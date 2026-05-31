@@ -7,7 +7,8 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "SwiftEyes",
-            path: "Sources/SwiftEyes"
+            path: "Sources/SwiftEyes",
+            exclude: ["Info.plist", "SwiftEyes.entitlements"]
         )
     ]
 )

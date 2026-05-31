@@ -1,12 +1,12 @@
 import SwiftUI
 import AppKit
 
-final class SettingsWindowController {
+final class SettingsWindowController: NSObject, NSWindowDelegate {
     static let shared = SettingsWindowController()
 
     private var window: NSWindow?
 
-    private init() {}
+    private override init() { super.init() }
 
     func show() {
         if let existingWindow = window, existingWindow.isVisible {
@@ -27,8 +27,14 @@ final class SettingsWindowController {
         newWindow.contentView = hostingView
         newWindow.center()
         newWindow.isReleasedWhenClosed = false
+        newWindow.delegate = self
         newWindow.makeKeyAndOrderFront(nil)
+        NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
         self.window = newWindow
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        NSApp.setActivationPolicy(.accessory)
     }
 }

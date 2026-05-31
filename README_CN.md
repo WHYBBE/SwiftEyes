@@ -6,6 +6,8 @@
 
 [English](README.md)
 
+使用 [OpenCode](https://opencode.ai) / GLM 5.1 Vibe Coding 而成，感谢 Zhoumo API。
+
 <img src="docs/Icon.png" width="128">
 
 ![macOS 13+](https://img.shields.io/badge/macOS-13.0+-blue)

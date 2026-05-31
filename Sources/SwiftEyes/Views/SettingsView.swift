@@ -37,6 +37,10 @@ struct SettingsView: View {
                 }
             }
 
+            Section("通用") {
+                Toggle("开机自启", isOn: $config.launchAtLogin)
+            }
+
             Section("终端应用") {
                 Picker("选择终端", selection: $terminalPath) {
                     ForEach(commonTerminals, id: \.1) { name, path in

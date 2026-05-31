@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import ServiceManagement
 
 final class EyesConfig: ObservableObject {
     static let shared = EyesConfig()
@@ -14,6 +15,10 @@ final class EyesConfig: ObservableObject {
         didSet { UserDefaults.standard.set(eyeGap, forKey: "eyeGap"); updateDerived() }
     }
 
+    @Published var launchAtLogin: Bool {
+        didSet { UserDefaults.standard.set(launchAtLogin, forKey: "launchAtLogin"); updateLaunchAtLogin() }
+    }
+
     @Published var maxPupilOffset: Double = 0
     @Published var totalItemWidth: Double = 0
     @Published var itemHeight: Double = 0
@@ -24,7 +29,18 @@ final class EyesConfig: ObservableObject {
         eyeRadius = UserDefaults.standard.object(forKey: "eyeRadius") as? Double ?? 11
         pupilRadius = UserDefaults.standard.object(forKey: "pupilRadius") as? Double ?? 5
         eyeGap = UserDefaults.standard.object(forKey: "eyeGap") as? Double ?? 6
+        launchAtLogin = UserDefaults.standard.object(forKey: "launchAtLogin") as? Bool ?? false
         updateDerived()
+    }
+
+    private func updateLaunchAtLogin() {
+        if #available(macOS 13.0, *) {
+            if launchAtLogin {
+                try? SMAppService.mainApp.register()
+            } else {
+                try? SMAppService.mainApp.unregister()
+            }
+        }
     }
 
     private func updateDerived() {

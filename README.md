@@ -8,6 +8,8 @@ Inspired by [Googly Eyes](https://sindresorhus.com/googly-eyes) by Sindre Sorhus
 
 ![macOS 13+](https://img.shields.io/badge/macOS-13.0+-blue)
 
+![Normal1](docs/Normal1.png) ![Normal2](docs/Normal2.png) ![Normal3](docs/Normal3.png)
+
 ## Features
 
 - **Eyes follow mouse** — Each eye independently tracks the mouse cursor; when the cursor is between the eyes, they go cross-eyed 👀

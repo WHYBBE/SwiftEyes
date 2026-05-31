@@ -6,6 +6,8 @@
 
 ![macOS 13+](https://img.shields.io/badge/macOS-13.0+-blue)
 
+![Normal1](docs/Normal1.png) ![Normal2](docs/Normal2.png) ![Normal3](docs/Normal3.png)
+
 ## 功能
 
 - **眼珠跟随鼠标** — 每只眼睛独立追踪鼠标光标；鼠标在两眼之间时会斗鸡眼 👀

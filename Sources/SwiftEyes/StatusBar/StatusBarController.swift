@@ -120,27 +120,42 @@ final class StatusBarController: NSObject {
     private func buildContextMenu() {
         contextMenu = NSMenu()
         contextMenu.delegate = self
+        rebuildMenuItems(contextMenu)
+    }
+
+    private func rebuildMenuItems(_ menu: NSMenu) {
+        menu.items.removeAll()
 
         let finderPath = terminalLauncher.finderPath ?? "无"
-        let pathItem = NSMenuItem(title: "Finder: \(finderPath)", action: #selector(copyFinderPath), keyEquivalent: "")
-        pathItem.target = self
-        pathItem.toolTip = "点击复制路径"
-        contextMenu.addItem(pathItem)
+
+        let pathLabel = NSMenuItem(title: "当前路径: \(finderPath)", action: nil, keyEquivalent: "")
+        pathLabel.isEnabled = false
+        menu.addItem(pathLabel)
+
+        let copyItem = NSMenuItem(title: "复制路径", action: #selector(copyFinderPath), keyEquivalent: "c")
+        copyItem.target = self
+        menu.addItem(copyItem)
+
+        let terminalItem = NSMenuItem(title: "在此打开终端", action: #selector(openTerminalHere), keyEquivalent: "t")
+        terminalItem.target = self
+        menu.addItem(terminalItem)
+
+        menu.addItem(NSMenuItem.separator())
 
         let sleepTitle = sleepPreventer.isActive ? "防睡眠: 开启" : "防睡眠: 关闭"
-        let sleepItem = NSMenuItem(title: sleepTitle, action: nil, keyEquivalent: "")
-        sleepItem.isEnabled = false
-        contextMenu.addItem(sleepItem)
+        let sleepItem = NSMenuItem(title: sleepTitle, action: #selector(toggleSleepPrevention), keyEquivalent: "s")
+        sleepItem.target = self
+        menu.addItem(sleepItem)
 
-        contextMenu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem.separator())
 
         let settingsItem = NSMenuItem(title: "设置...", action: #selector(openSettings), keyEquivalent: ",")
         settingsItem.target = self
-        contextMenu.addItem(settingsItem)
-        contextMenu.addItem(NSMenuItem.separator())
+        menu.addItem(settingsItem)
+        menu.addItem(NSMenuItem.separator())
         let quitItem = NSMenuItem(title: "退出 SwiftEyes", action: #selector(quitApp), keyEquivalent: "q")
         quitItem.target = self
-        contextMenu.addItem(quitItem)
+        menu.addItem(quitItem)
     }
 
     private func showContextMenu() {
@@ -165,6 +180,15 @@ final class StatusBarController: NSObject {
         }
     }
 
+    @objc private func openTerminalHere() {
+        terminalLauncher.launchTerminalAtFinderPath()
+    }
+
+    @objc private func toggleSleepPrevention() {
+        sleepPreventer.toggle()
+        eyesState.rightEyeActive = sleepPreventer.isActive
+    }
+
     @objc private func openSettings() {
         SettingsWindowController.shared.show()
     }
@@ -176,7 +200,6 @@ final class StatusBarController: NSObject {
 
 extension StatusBarController: NSMenuDelegate {
     func menuWillOpen(_ menu: NSMenu) {
-        menu.items.removeAll()
-        buildContextMenu()
+        rebuildMenuItems(menu)
     }
 }

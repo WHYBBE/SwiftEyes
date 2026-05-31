@@ -18,6 +18,7 @@
 		A10009 /* SleepPreventer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009; };
 		A10010 /* EyesConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010; };
 		A10011 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011; };
+		A10012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10012; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		B10009 /* SleepPreventer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepPreventer.swift; sourceTree = "<group>"; };
 		B10010 /* EyesConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyesConfig.swift; sourceTree = "<group>"; };
 		B10011 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
+		B10012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				B10001,
+				B10012,
 				E10002,
 				E10003,
 				E10004,
@@ -170,6 +173,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10012,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

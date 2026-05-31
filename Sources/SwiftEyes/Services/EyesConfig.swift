@@ -16,8 +16,13 @@ final class EyesConfig: ObservableObject {
     }
 
     @Published var launchAtLogin: Bool {
-        didSet { UserDefaults.standard.set(launchAtLogin, forKey: "launchAtLogin"); updateLaunchAtLogin() }
+        didSet {
+            UserDefaults.standard.set(launchAtLogin, forKey: "launchAtLogin")
+            if isInAppBundle { updateLaunchAtLogin() }
+        }
     }
+
+    let isInAppBundle: Bool
 
     @Published var maxPupilOffset: Double = 0
     @Published var totalItemWidth: Double = 0
@@ -26,10 +31,11 @@ final class EyesConfig: ObservableObject {
     var onChange: (() -> Void)?
 
     private init() {
+        isInAppBundle = Bundle.main.bundleURL.pathExtension == "app"
         eyeRadius = UserDefaults.standard.object(forKey: "eyeRadius") as? Double ?? 11
         pupilRadius = UserDefaults.standard.object(forKey: "pupilRadius") as? Double ?? 5
         eyeGap = UserDefaults.standard.object(forKey: "eyeGap") as? Double ?? 6
-        launchAtLogin = UserDefaults.standard.object(forKey: "launchAtLogin") as? Bool ?? false
+        launchAtLogin = isInAppBundle && (UserDefaults.standard.object(forKey: "launchAtLogin") as? Bool ?? false)
         updateDerived()
     }
 

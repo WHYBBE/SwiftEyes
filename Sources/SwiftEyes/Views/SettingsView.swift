@@ -39,6 +39,11 @@ struct SettingsView: View {
 
             Section("通用") {
                 Toggle("开机自启", isOn: $config.launchAtLogin)
+                    .disabled(!config.isInAppBundle)
+                if !config.isInAppBundle {
+                    Text("需要 .app bundle 才能启用开机自启（请使用 Xcode 构建）")
+                        .foregroundColor(.secondary).font(.caption)
+                }
             }
 
             Section("终端应用") {

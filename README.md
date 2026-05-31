@@ -96,7 +96,7 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 
 | Left-click blink | Prevent sleep (red glow) | Settings |
 |---|---|---|
-| ![Left Button Clicked](docs/Left%20Button%20Clicked.png) | ![Prevent Sleep](docs/Prevent%20Sleep.png) | ![Setting](docs/Setting.png) |
+| ![Left Button Clicked](docs/Left%20Button%20Clicked.png) | ![Prevent Sleep](docs/Prevent%20Sleep.png) | ![Setting](docs/Setting-en.png) |
 
 ## Settings
 

@@ -94,7 +94,7 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 
 | 左键眨眼 | 防睡眠（红色发光） | 设置 |
 |---|---|---|
-| ![Left Button Clicked](docs/Left%20Button%20Clicked.png) | ![Prevent Sleep](docs/Prevent%20Sleep.png) | ![Setting](docs/Setting.png) |
+| ![Left Button Clicked](docs/Left%20Button%20Clicked.png) | ![Prevent Sleep](docs/Prevent%20Sleep.png) | ![Setting](docs/Setting-zh.png) |
 
 ## 设置项
 

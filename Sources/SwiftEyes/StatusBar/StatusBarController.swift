@@ -194,6 +194,10 @@ final class StatusBarController: NSObject {
         settingsItem.target = self
         menu.addItem(settingsItem)
         menu.addItem(NSMenuItem.separator())
+        let refreshItem = NSMenuItem(title: L10n.tr("menu_refresh"), action: #selector(refreshPosition), keyEquivalent: "r")
+        refreshItem.target = self
+        menu.addItem(refreshItem)
+        menu.addItem(NSMenuItem.separator())
         let quitItem = NSMenuItem(title: L10n.tr("menu_quit"), action: #selector(quitApp), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
@@ -232,6 +236,10 @@ final class StatusBarController: NSObject {
 
     @objc private func openSettings() {
         SettingsWindowController.shared.show()
+    }
+
+    @objc private func refreshPosition() {
+        updateEyeCenters()
     }
 
     @objc private func quitApp() {

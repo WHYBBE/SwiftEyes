@@ -142,6 +142,8 @@ Sources/SwiftEyes/
 - **Coalesced layout updates** — `scheduleUpdateEyeCenters()` batches same-runloop coordinate recalculations when dragging settings sliders
 - **IOKit assertion** — `IOPMAssertionCreateWithName` held only while sleep prevention is active; released immediately on toggle off
 - **Cached AppleScript** — Finder path result cached with 2-second TTL; AppleScript never executed on idle
+- **Dirty-rect partial redraw** — Mouse moves only invalidate the pupil area (~30×30px), not the entire view; full redraw reserved for blink/config changes
+- **`hypot` for distance** — Uses `hypot(dx, dy)` instead of `sqrt(dx*dx + dy*dy)` for distance calculation
 - **Static CGColor constants** — Eye colors pre-converted to `CGColor` once, avoiding per-frame `NSColor.cgColor` bridging
 - **`NSApp.setActivationPolicy(.regular)`** temporarily when settings window opens, `.accessory` when closed — keeps the app out of the Dock while allowing settings to come to front
 - **L10n dictionary** — In-memory translation table keyed by language code, no .strings files; `language` persisted via UserDefaults

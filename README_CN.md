@@ -142,6 +142,8 @@ Sources/SwiftEyes/
 - **合并布局更新** — `scheduleUpdateEyeCenters()` 将同一 runloop 内的坐标重计算合并，避免拖动滑块时重复调用
 - **IOKit 断言** — `IOPMAssertionCreateWithName` 仅在防睡眠激活时持有，关闭时立即释放
 - **AppleScript 缓存** — Finder 路径结果缓存 2 秒，空闲时不执行 AppleScript
+- **脏区域局部重绘** — 鼠标移动时只 invalidate 瞳孔区域（约 30×30px），而非整个视图；眨眼/设置变更才全量重绘
+- **`hypot` 优化距离计算** — 用 `hypot(dx, dy)` 替代 `sqrt(dx*dx + dy*dy)`
 - **静态 CGColor** — 眼睛颜色预转换为 `CGColor` 常量，避免每帧 `NSColor.cgColor` 桥接
 - **设置窗口** 临时切换 `NSApp.setActivationPolicy(.regular)` 使窗口到前台，关闭时切回 `.accessory`
 - **L10n 字典** — 内存中翻译表按语言代码索引，无 .strings 文件；`language` 通过 UserDefaults 持久化

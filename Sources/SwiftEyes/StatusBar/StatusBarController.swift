@@ -11,6 +11,8 @@ final class StatusBarController: NSObject {
     private var contextMenu: NSMenu!
     private var rightClickMonitor: Any?
     private var frameObserver: Any?
+    private var screenChangeObserver: Any?
+    private var windowMoveObserver: Any?
     private var eyesView: GooglyEyesNSView?
     private var updateCentersScheduled = false
 
@@ -38,6 +40,14 @@ final class StatusBarController: NSObject {
         if let o = frameObserver {
             NotificationCenter.default.removeObserver(o)
             frameObserver = nil
+        }
+        if let o = screenChangeObserver {
+            NotificationCenter.default.removeObserver(o)
+            screenChangeObserver = nil
+        }
+        if let o = windowMoveObserver {
+            NotificationCenter.default.removeObserver(o)
+            windowMoveObserver = nil
         }
 
         let totalWidth = EyesConfig.shared.totalItemWidth
@@ -73,6 +83,20 @@ final class StatusBarController: NSObject {
         frameObserver = NotificationCenter.default.addObserver(
             forName: NSView.frameDidChangeNotification, object: button, queue: .main
         ) { [weak self] _ in self?.scheduleUpdateEyeCenters() }
+
+        screenChangeObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { self?.updateEyeCenters() }
+        }
+
+        windowMoveObserver = NotificationCenter.default.addObserver(
+            forName: NSWindow.didMoveNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let window = notification.object as? NSWindow,
+                  window == self?.statusItem?.button?.window else { return }
+            self?.scheduleUpdateEyeCenters()
+        }
 
         mouseTracker.startTracking()
         mouseTracker.maxPupilOffset = EyesConfig.shared.maxPupilOffset

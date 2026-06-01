@@ -19,6 +19,7 @@
 		A10010 /* EyesConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010; };
 		A10011 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011; };
 		A10012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10012; };
+		A10013 /* AboutWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10013; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		B10010 /* EyesConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyesConfig.swift; sourceTree = "<group>"; };
 		B10011 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		B10012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10013 /* AboutWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutWindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 				B10003,
 				B10004,
 				B10005,
+				B10013,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -195,6 +198,7 @@
 				A10009,
 				A10010,
 				A10011,
+				A10013,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

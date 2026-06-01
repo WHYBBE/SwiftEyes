@@ -49,6 +49,7 @@ final class MouseTracker {
         lastUpdateTime = now
 
         let mouse = NSEvent.mouseLocation
+
         let left = computeOffset(from: mouse, to: leftEyeScreenCenter)
         let right = computeOffset(from: mouse, to: rightEyeScreenCenter)
 
@@ -69,18 +70,14 @@ final class MouseTracker {
         guard center.x != 0 || center.y != 0 else { return .zero }
         let dx = mouse.x - center.x
         let dy = center.y - mouse.y
-        let distance = sqrt(dx * dx + dy * dy)
+        let distance = hypot(dx, dy)
         guard distance > 0.5 else { return .zero }
-
-        let angle = atan2(dy, dx)
-        let normalX = cos(angle)
-        let normalY = sin(angle)
 
         let saturationDistance: CGFloat = 20
         let t = min(distance / saturationDistance, 1.0)
         let easedT = t * (2 - t)
 
         let magnitude = maxPupilOffset * easedT
-        return CGPoint(x: normalX * magnitude, y: normalY * magnitude)
+        return CGPoint(x: dx / distance * magnitude, y: dy / distance * magnitude)
     }
 }

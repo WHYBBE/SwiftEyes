@@ -2,7 +2,7 @@ import AppKit
 
 final class GooglyEyesNSView: NSView {
     var mouseTracker: MouseTracker! {
-        didSet { mouseTracker.onOffsetChanged = { [weak self] in self?.needsDisplay = true } }
+        didSet { mouseTracker.onOffsetChanged = { [weak self] in self?.invalidatePupilAreas() } }
     }
     var eyesState: EyesState! {
         didSet { eyesState.onChange = { [weak self] in self?.needsDisplay = true } }
@@ -10,8 +10,11 @@ final class GooglyEyesNSView: NSView {
     var eyesConfig: EyesConfig!
 
     private var configObserver: NSObjectProtocol?
+    private var prevLeftOffset: CGPoint = .zero
+    private var prevRightOffset: CGPoint = .zero
 
     private static let white70 = NSColor.white.withAlphaComponent(0.7).cgColor
+    private static let white = NSColor.white.cgColor
     private static let black = NSColor.black.cgColor
     private static let red = NSColor.red.cgColor
 
@@ -29,6 +32,44 @@ final class GooglyEyesNSView: NSView {
 
     deinit {
         if let o = configObserver { NotificationCenter.default.removeObserver(o) }
+    }
+
+    private func invalidatePupilAreas() {
+        let leftOffset = mouseTracker?.leftPupilOffset ?? .zero
+        let rightOffset = mouseTracker?.rightPupilOffset ?? .zero
+
+        let pr = CGFloat(eyesConfig?.pupilRadius ?? 5) + 2
+
+        let dirtyLeft = pupilDirtyRect(center: leftEyeCenter, offset: prevLeftOffset, pr: pr)
+        let dirtyRight = pupilDirtyRect(center: rightEyeCenter, offset: prevRightOffset, pr: pr)
+
+        prevLeftOffset = leftOffset
+        prevRightOffset = rightOffset
+
+        setNeedsDisplay(dirtyLeft)
+        setNeedsDisplay(dirtyRight)
+    }
+
+    private var leftEyeCenter: NSPoint {
+        let cfg = eyesConfig ?? EyesConfig.shared
+        let eyeW = cfg.eyeRadius * 2
+        let totalWidth = eyeW * 2 + cfg.eyeGap
+        let startX = (bounds.width - totalWidth) / 2
+        return NSPoint(x: startX + cfg.eyeRadius, y: bounds.height / 2)
+    }
+
+    private var rightEyeCenter: NSPoint {
+        let cfg = eyesConfig ?? EyesConfig.shared
+        let eyeW = cfg.eyeRadius * 2
+        let totalWidth = eyeW * 2 + cfg.eyeGap
+        let startX = (bounds.width - totalWidth) / 2
+        return NSPoint(x: startX + eyeW + cfg.eyeGap + cfg.eyeRadius, y: bounds.height / 2)
+    }
+
+    private func pupilDirtyRect(center: NSPoint, offset: CGPoint, pr: CGFloat) -> NSRect {
+        let margin: CGFloat = 4
+        return NSRect(x: center.x - pr - margin, y: center.y - pr - margin,
+                       width: (pr + margin) * 2, height: (pr + margin) * 2)
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -68,7 +109,7 @@ final class GooglyEyesNSView: NSView {
 
         let eyeRect = CGRect(x: center.x - er, y: center.y - er, width: er * 2, height: er * 2)
 
-        ctx.setFillColor(Self.white70.copy(alpha: 1)!)
+        ctx.setFillColor(Self.white)
         ctx.fillEllipse(in: eyeRect)
         ctx.setStrokeColor(Self.black)
         ctx.setLineWidth(1.2)

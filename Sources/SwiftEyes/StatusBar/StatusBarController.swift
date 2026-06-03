@@ -21,6 +21,11 @@ final class StatusBarController: NSObject {
     func setup() {
         rebuildStatusItem()
 
+        sleepPreventer.onDeactivate = { [weak self] in
+            guard let self else { return }
+            self.eyesState.rightEyeActive = false
+        }
+
         EyesConfig.shared.onChange = { [weak self] in
             guard let self, let item = self.statusItem else { return }
             let newWidth = EyesConfig.shared.totalItemWidth

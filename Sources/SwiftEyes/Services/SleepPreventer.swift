@@ -1,21 +1,52 @@
+import AppKit
 import Foundation
 import IOKit
 import IOKit.pwr_mgt
 
 final class SleepPreventer {
     var isActive: Bool = false
+    var onDeactivate: (() -> Void)?
     private var systemAssertionID: IOPMAssertionID = 0
     private var displayAssertionID: IOPMAssertionID = 0
     private var hasSystemAssertion = false
     private var hasDisplayAssertion = false
+    private var lockObserver: Any?
+    private var sleepObserver: Any?
 
     func toggle() {
         isActive = !isActive
         if isActive {
             preventSleep()
+            startMonitoring()
         } else {
+            stopMonitoring()
             allowSleep()
         }
+    }
+
+    private func startMonitoring() {
+        guard lockObserver == nil && sleepObserver == nil else { return }
+        let dnc = DistributedNotificationCenter.default()
+        lockObserver = dnc.addObserver(forName: Notification.Name("com.apple.screenIsLocked"), object: nil, queue: .main) { [weak self] _ in
+            self?.forceDeactivate()
+        }
+        let nc = NSWorkspace.shared.notificationCenter
+        sleepObserver = nc.addObserver(forName: NSWorkspace.willSleepNotification, object: nil, queue: .main) { [weak self] _ in
+            self?.forceDeactivate()
+        }
+    }
+
+    private func stopMonitoring() {
+        let dnc = DistributedNotificationCenter.default()
+        if let o = lockObserver { dnc.removeObserver(o); lockObserver = nil }
+        let nc = NSWorkspace.shared.notificationCenter
+        if let o = sleepObserver { nc.removeObserver(o); sleepObserver = nil }
+    }
+
+    private func forceDeactivate() {
+        allowSleep()
+        isActive = false
+        onDeactivate?()
     }
 
     private func preventSleep() {
@@ -65,6 +96,7 @@ final class SleepPreventer {
     }
 
     deinit {
+        stopMonitoring()
         allowSleep()
     }
 }

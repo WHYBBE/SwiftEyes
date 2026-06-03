@@ -4,8 +4,10 @@ import IOKit.pwr_mgt
 
 final class SleepPreventer {
     var isActive: Bool = false
-    private var assertionID: IOPMAssertionID = 0
-    private var hasAssertion = false
+    private var systemAssertionID: IOPMAssertionID = 0
+    private var displayAssertionID: IOPMAssertionID = 0
+    private var hasSystemAssertion = false
+    private var hasDisplayAssertion = false
 
     func toggle() {
         isActive = !isActive
@@ -17,29 +19,48 @@ final class SleepPreventer {
     }
 
     private func preventSleep() {
-        guard !hasAssertion else { return }
+        guard !hasSystemAssertion else { return }
         let reason = "SwiftEyes keeping system awake" as CFString
-        let assertionName = "PreventUserIdleSystemSleep" as CFString
-        let result = IOPMAssertionCreateWithName(
-            assertionName,
+
+        let systemResult = IOPMAssertionCreateWithName(
+            kIOPMAssertPreventUserIdleSystemSleep as CFString,
             IOPMAssertionLevel(kIOPMAssertionLevelOn),
             reason,
-            &assertionID
+            &systemAssertionID
         )
-        if result == kIOReturnSuccess {
-            hasAssertion = true
+        if systemResult == kIOReturnSuccess {
+            hasSystemAssertion = true
         } else {
-            print("Failed to create sleep assertion: \(result)")
+            print("Failed to create system sleep assertion: \(systemResult)")
+        }
+
+        let displayResult = IOPMAssertionCreateWithName(
+            kIOPMAssertPreventUserIdleDisplaySleep as CFString,
+            IOPMAssertionLevel(kIOPMAssertionLevelOn),
+            reason,
+            &displayAssertionID
+        )
+        if displayResult == kIOReturnSuccess {
+            hasDisplayAssertion = true
+        } else {
+            print("Failed to create display sleep assertion: \(displayResult)")
+        }
+
+        if !hasSystemAssertion && !hasDisplayAssertion {
             isActive = false
-            hasAssertion = false
         }
     }
 
     private func allowSleep() {
-        if hasAssertion {
-            IOPMAssertionRelease(assertionID)
-            hasAssertion = false
-            assertionID = 0
+        if hasSystemAssertion {
+            IOPMAssertionRelease(systemAssertionID)
+            hasSystemAssertion = false
+            systemAssertionID = 0
+        }
+        if hasDisplayAssertion {
+            IOPMAssertionRelease(displayAssertionID)
+            hasDisplayAssertion = false
+            displayAssertionID = 0
         }
     }
 

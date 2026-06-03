@@ -6,6 +6,7 @@ import IOKit.pwr_mgt
 final class SleepPreventer {
     var isActive: Bool = false
     var onDeactivate: (() -> Void)?
+    private var desiredActive: Bool
     private var systemAssertionID: IOPMAssertionID = 0
     private var displayAssertionID: IOPMAssertionID = 0
     private var hasSystemAssertion = false
@@ -13,8 +14,14 @@ final class SleepPreventer {
     private var lockObserver: Any?
     private var sleepObserver: Any?
 
+    init() {
+        desiredActive = UserDefaults.standard.bool(forKey: "sleepPreventionActive")
+    }
+
     func toggle() {
-        isActive = !isActive
+        desiredActive = !desiredActive
+        UserDefaults.standard.set(desiredActive, forKey: "sleepPreventionActive")
+        isActive = desiredActive
         if isActive {
             preventSleep()
             startMonitoring()
@@ -22,6 +29,13 @@ final class SleepPreventer {
             stopMonitoring()
             allowSleep()
         }
+    }
+
+    func restore() {
+        guard desiredActive else { return }
+        isActive = true
+        preventSleep()
+        startMonitoring()
     }
 
     private func startMonitoring() {
@@ -47,6 +61,7 @@ final class SleepPreventer {
         allowSleep()
         isActive = false
         onDeactivate?()
+        stopMonitoring()
     }
 
     private func preventSleep() {

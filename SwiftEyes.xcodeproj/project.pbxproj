@@ -278,7 +278,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.swift-eyes.app";
+				PRODUCT_BUNDLE_IDENTIFIER = "me.whynbnb.swift-eyes";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -303,7 +303,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.swift-eyes.app";
+				PRODUCT_BUNDLE_IDENTIFIER = "me.whynbnb.swift-eyes";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

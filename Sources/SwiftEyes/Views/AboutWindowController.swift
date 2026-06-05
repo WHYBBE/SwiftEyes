@@ -92,11 +92,22 @@ private final class AboutView: NSView {
         license.alignment = .center
         license.translatesAutoresizingMaskIntoConstraints = false
 
+        let repoURL = "https://github.com/WHYBBE/SwiftEyes"
+        let repoLink = NSTextField(labelWithString: repoURL)
+        repoLink.font = .systemFont(ofSize: 11)
+        repoLink.textColor = .linkColor
+        repoLink.alignment = .center
+        repoLink.translatesAutoresizingMaskIntoConstraints = false
+        repoLink.translatesAutoresizingMaskIntoConstraints = false
+        let clickGesture = NSClickGestureRecognizer(target: self, action: #selector(openRepo))
+        repoLink.addGestureRecognizer(clickGesture)
+
         addSubview(icon)
         addSubview(appName)
         addSubview(versionLabel)
         addSubview(desc)
         addSubview(license)
+        addSubview(repoLink)
 
         let spacing: CGFloat = 6
 
@@ -118,7 +129,16 @@ private final class AboutView: NSView {
 
             license.topAnchor.constraint(equalTo: desc.bottomAnchor, constant: spacing),
             license.centerXAnchor.constraint(equalTo: centerXAnchor),
-            license.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+
+            repoLink.topAnchor.constraint(equalTo: license.bottomAnchor, constant: 2),
+            repoLink.centerXAnchor.constraint(equalTo: centerXAnchor),
+            repoLink.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
         ])
+    }
+
+    @objc private func openRepo() {
+        if let url = URL(string: "https://github.com/WHYBBE/SwiftEyes") {
+            NSWorkspace.shared.open(url)
+        }
     }
 }

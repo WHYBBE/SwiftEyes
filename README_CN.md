@@ -19,7 +19,7 @@
 - **眼珠跟随鼠标** — 每只眼睛独立追踪鼠标光标；鼠标在两眼之间时会斗鸡眼 👀
 - **点击眨眼** — 全局左键点击 → 左眼眨眼；右键 → 右眼眨眼。按下保持闭合，松开睁开
 - **左眼 → 打开终端** — 点击左眼，在 Finder 当前窗口路径打开终端
-- **右眼 → 防止睡眠** — 点击右眼切换 macOS 防睡眠模式（激活时瞳孔发红光）
+- **右眼 → 防止睡眠** — 点击右眼切换 macOS 防睡眠模式（激活时瞳孔发红光）；锁屏或系统睡眠时自动关闭；状态跨重启保持
 - **右键菜单** — 右键菜单栏图标：
   - 显示并复制当前 Finder 路径
   - 在此路径打开终端
@@ -82,7 +82,7 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | **上下文菜单** | |
 | ↳ 当前路径 / 复制路径 | 显示并复制 Finder 前台窗口路径 |
 | ↳ 在此打开终端 | 在 Finder 路径打开终端 |
-| ↳ 防睡眠: 开启/关闭 | 切换防睡眠模式 |
+| ↳ 防睡眠: 开启/关闭 | 切换防睡眠（锁屏/睡眠时自动关闭，重启后恢复） |
 | ↳ 设置 | 打开设置窗口 |
 | ↳ 退出 | 退出应用 |
 
@@ -94,7 +94,7 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | 终端已打开 | — | — |
 | 防睡眠开启 | — | 红色瞳孔 + 红色发光 + 红色高光 |
 
-> 左眼是瞬时动作（打开终端），无持续激活状态。右眼在防睡眠激活时显示红色发光。
+> 左眼是瞬时动作（打开终端），无持续激活状态。右眼在防睡眠激活时显示红色发光。防睡眠状态会保存，重启后自动恢复。
 
 ### 截图
 
@@ -124,13 +124,14 @@ Sources/SwiftEyes/
 ├── Views/
 │   ├── GooglyEyesView.swift        # 基于 NSView 的眼睛绘制 (Core Graphics)
 │   ├── SettingsView.swift          # SwiftUI 设置表单
-│   └── SettingsWindowController.swift  # NSWindow 窗口管理
+│   ├── SettingsWindowController.swift  # NSWindow 窗口管理
+│   └── AboutWindowController.swift     # 关于窗口 + 仓库链接
 └── Services/
     ├── EyesConfig.swift            # ObservableObject 眼睛参数
     ├── EyesState.swift             # 眨眼和激活状态（全局事件监听）
     ├── MouseTracker.swift          # 全局鼠标追踪（节流）
     ├── TerminalLauncher.swift      # Finder 路径 + 终端启动
-    ├── SleepPreventer.swift        # IOKit IOPMAssertion
+    ├── SleepPreventer.swift        # IOKit IOPMAssertion（系统 + 显示器防睡眠）
     └── L10n.swift                  # 中英文本地化
 ```
 
@@ -140,7 +141,7 @@ Sources/SwiftEyes/
 - **节流鼠标追踪** — 全局 `NSEvent` 监听 ~12fps 并去重；`onOffsetChanged` 回调仅在瞳孔位置实际变化时触发重绘
 - **热路径无 Combine** — `MouseTracker` 和 `EyesState` 使用普通属性 + 回调替代 `@Published`/`ObservableObject`，消除每帧 Combine 管道开销
 - **合并布局更新** — `scheduleUpdateEyeCenters()` 将同一 runloop 内的坐标重计算合并，避免拖动滑块时重复调用
-- **IOKit 断言** — `IOPMAssertionCreateWithName` 仅在防睡眠激活时持有，关闭时立即释放
+- **IOKit 双断言** — 激活时同时持有 `PreventUserIdleSystemSleep` + `PreventUserIdleDisplaySleep`；锁屏或系统睡眠时自动释放；用户意愿通过 UserDefaults 持久化，重启后恢复
 - **AppleScript 缓存** — Finder 路径结果缓存 2 秒，空闲时不执行 AppleScript
 - **脏区域局部重绘** — 鼠标移动时只 invalidate 瞳孔区域（约 30×30px），而非整个视图；眨眼/设置变更才全量重绘
 - **`hypot` 优化距离计算** — 用 `hypot(dx, dy)` 替代 `sqrt(dx*dx + dy*dy)`

@@ -19,7 +19,7 @@ Inspired by [Googly Eyes](https://sindresorhus.com/googly-eyes) by Sindre Sorhus
 - **Eyes follow mouse** — Each eye independently tracks the mouse cursor; when the cursor is between the eyes, they go cross-eyed 👀
 - **Blink on click** — Left-click anywhere → left eye blinks; right-click → right eye blinks. Hold to keep closed, release to open
 - **Left eye → Open Terminal** — Click the left eye to launch your preferred terminal at the Finder's current window path
-- **Right eye → Prevent Sleep** — Click the right eye to toggle macOS sleep prevention (highlighted with a red glow when active)
+- **Right eye → Prevent Sleep** — Click the right eye to toggle macOS sleep prevention (highlighted with a red glow when active); auto-deactivates on screen lock or system sleep; state persists across restarts
 - **Context menu** — Right-click the menu bar icon for:
   - Current Finder path display & copy
   - Open terminal here
@@ -82,7 +82,7 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | **Context menu** | |
 | ↳ Current Path / Copy Path | Show & copy Finder's front window path |
 | ↳ Open Terminal Here | Open terminal at Finder path |
-| ↳ Prevent Sleep: On/Off | Toggle sleep prevention |
+| ↳ Prevent Sleep: On/Off | Toggle sleep prevention (auto-deactivates on lock/sleep, persists across restarts) |
 | ↳ Settings | Open settings window |
 | ↳ Quit | Quit app |
 
@@ -94,7 +94,7 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | Active (terminal opened) | — | — |
 | Active (sleep prevention ON) | — | Red pupil + red glow + red highlight |
 
-> The left eye is a one-shot action (open terminal), so it has no persistent active state. The right eye shows a red glow while sleep prevention is active.
+> The left eye is a one-shot action (open terminal), so it has no persistent active state. The right eye shows a red glow while sleep prevention is active. Sleep prevention state is saved and restored across app restarts.
 
 ### Screenshots
 
@@ -124,13 +124,14 @@ Sources/SwiftEyes/
 ├── Views/
 │   ├── GooglyEyesView.swift        # NSView-based eye drawing (Core Graphics)
 │   ├── SettingsView.swift          # SwiftUI settings form
-│   └── SettingsWindowController.swift  # NSWindow management
+│   ├── SettingsWindowController.swift  # NSWindow management
+│   └── AboutWindowController.swift     # About window with repo link
 └── Services/
     ├── EyesConfig.swift            # ObservableObject for eye parameters
     ├── EyesState.swift             # Blink & active state (global monitors)
     ├── MouseTracker.swift          # Global mouse tracking (throttled)
     ├── TerminalLauncher.swift      # Finder path + terminal launch
-    ├── SleepPreventer.swift        # IOKit IOPMAssertion
+    ├── SleepPreventer.swift        # IOKit IOPMAssertion (system + display sleep)
     └── L10n.swift                  # Localization (Chinese / English)
 ```
 
@@ -140,7 +141,7 @@ Sources/SwiftEyes/
 - **Throttled mouse tracking** — Global `NSEvent` monitor at ~12fps with offset deduplication; `onOffsetChanged` callback triggers redraw only when pupil position actually changes
 - **No Combine in hot path** — `MouseTracker` and `EyesState` use plain properties + callbacks instead of `@Published`/`ObservableObject`, eliminating Combine pipeline overhead per frame
 - **Coalesced layout updates** — `scheduleUpdateEyeCenters()` batches same-runloop coordinate recalculations when dragging settings sliders
-- **IOKit assertion** — `IOPMAssertionCreateWithName` held only while sleep prevention is active; released immediately on toggle off
+- **IOKit dual assertion** — `PreventUserIdleSystemSleep` + `PreventUserIdleDisplaySleep` held while active; auto-released on screen lock or system sleep; desired state persisted to UserDefaults across app restarts
 - **Cached AppleScript** — Finder path result cached with 2-second TTL; AppleScript never executed on idle
 - **Dirty-rect partial redraw** — Mouse moves only invalidate the pupil area (~30×30px), not the entire view; full redraw reserved for blink/config changes
 - **`hypot` for distance** — Uses `hypot(dx, dy)` instead of `sqrt(dx*dx + dy*dy)` for distance calculation

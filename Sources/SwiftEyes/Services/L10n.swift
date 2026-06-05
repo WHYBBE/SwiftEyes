@@ -36,8 +36,6 @@ enum L10n {
             "about_title": "关于 SwiftEyes",
             "about_version": "版本",
             "about_description": "轻量级 macOS 菜单栏应用，会跟随鼠标的 Googly Eyes",
-            "about_credit": "使用 OpenCode / GLM 5.1 Vibe Coding 而成",
-            "about_thanks": "感谢 Zhoumo API",
             "none": "无",
         ],
         "en": [
@@ -72,8 +70,6 @@ enum L10n {
             "about_title": "About SwiftEyes",
             "about_version": "Version",
             "about_description": "A lightweight macOS menu bar app with googly eyes that follow your cursor",
-            "about_credit": "Made with OpenCode / GLM 5.1 Vibe Coding",
-            "about_thanks": "Thanks to Zhoumo API",
             "none": "None",
         ]
     ]

@@ -6,7 +6,7 @@ Inspired by [Googly Eyes](https://sindresorhus.com/googly-eyes) by Sindre Sorhus
 
 [中文文档](README_CN.md)
 
-Made with [OpenCode](https://opencode.ai) / GLM 5.1 Vibe Coding. Thanks to Zhoumo API.
+> Made with [OpenCode](https://opencode.ai) / GLM 5.1 Vibe Coding. Thanks to Zhoumo API.
 
 <img src="docs/Icon.png" width="128">
 

@@ -6,7 +6,7 @@
 
 [English](README.md)
 
-使用 [OpenCode](https://opencode.ai) / GLM 5.1 Vibe Coding 而成，感谢 Zhoumo API。
+> 使用 [OpenCode](https://opencode.ai) / GLM 5.1 Vibe Coding 而成，感谢 Zhoumo API。
 
 <img src="docs/Icon.png" width="128">
 

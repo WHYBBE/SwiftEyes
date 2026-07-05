@@ -22,12 +22,12 @@
   - 显示并复制当前 Finder 路径（中间省略，悬浮显示完整路径）
   - 打开终端
   - 切换防睡眠
-  - 设置...
   - 刷新位置
+  - 设置...
   - 关于
   - 退出
 - **右键左眼 → 打开终端** — 右键点击左眼区域，在 Finder 当前窗口路径打开终端
-- **右键右眼 → 防止睡眠** — 右键点击右眼区域切换 macOS 防睡眠模式（激活时高光变红）；锁屏或系统睡眠时自动关闭；状态跨重启保持
+- **右键右眼 → 防止睡眠** — 右键点击右眼区域切换 macOS 防睡眠模式（激活时高光变红）；锁屏或系统睡眠时自动关闭；维持模式可在设置中配置（始终维持 / 睡眠锁屏不维持 / 从不维持）
 - **可自定义** — 通过设置调整眼睛大小、瞳孔大小、眼距
 - **开机自启** — 在设置中启用（需要 .app bundle）
 - **极低资源占用** — 空闲时 CPU ≈ 0%，内存仅 20–40MB
@@ -36,7 +36,7 @@
 
 - macOS 13.0 (Ventura) 及以上
 - Xcode 15+（构建 .app bundle）
-- Swift 5.9+ / SPM（构建裸二进制）
+- Swift 6.0+ / SPM（构建裸二进制）
 
 ## 构建与运行
 
@@ -82,11 +82,11 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | 全局左键点击（任意位置） | 左眼眨眼（按住保持闭合） |
 | 全局右键点击（任意位置） | 右眼眨眼（按住保持闭合） |
 | **上下文菜单** | |
-| ↳ 路径 / 复制路径 | 显示（中间省略，悬浮显示完整）并复制 Finder 前台窗口路径 |
+| ↳ 路径 / 复制路径 | 显示（中间省略，悬浮显示完整）并复制 Finder 前台窗口路径（复制时强制刷新） |
 | ↳ 打开终端 | 在 Finder 路径打开终端 |
-| ↳ 防睡眠: 开启/关闭 | 切换防睡眠（锁屏/睡眠时自动关闭，重启后恢复） |
-| ↳ 设置... | 打开设置窗口 |
+| ↳ 防睡眠: 开启/关闭 | 切换防睡眠（锁屏/睡眠时自动关闭；维持模式可配置） |
 | ↳ 刷新位置 | 重新计算眼睛中心位置 |
+| ↳ 设置... | 打开设置窗口 |
 | ↳ 关于 | 显示关于窗口（含仓库链接） |
 | ↳ 退出 | 退出应用 |
 
@@ -98,7 +98,7 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | 终端已打开 | — | — |
 | 防睡眠开启 | — | 黑色瞳孔 + 红色高光 |
 
-> 左眼是瞬时动作（打开终端），无持续激活状态。右眼在防睡眠激活时高光变红。防睡眠状态会保存，重启后自动恢复。
+> 左眼是瞬时动作（打开终端），无持续激活状态。右眼在防睡眠激活时高光变红。防睡眠维持模式可配置（始终维持 / 睡眠锁屏不维持 / 从不维持）。
 
 ### 截图
 
@@ -116,6 +116,7 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | 终端应用 | /System/Applications/Utilities/Terminal.app | 任意 .app 路径 |
 | 语言 | 中文 | 中文 / English |
 | 开机自启 | 关 | 开/关 |
+| 防睡眠维持模式 | 睡眠/锁屏不维持，重启维持 | 始终维持 / 睡眠/锁屏不维持，重启维持 / 从不维持 |
 
 > 每个滑块都有重置按钮（↺）可恢复默认值。
 
@@ -135,11 +136,12 @@ Sources/SwiftEyes/
 │   ├── SettingsWindowController.swift  # NSWindow 窗口管理
 │   └── AboutWindowController.swift     # 关于窗口 + 仓库链接
 └── Services/
-    ├── EyesConfig.swift            # ObservableObject 眼睛参数
+    ├── EyesConfig.swift            # ObservableObject 眼睛参数 + 防睡眠维持模式
     ├── EyesState.swift             # 眨眼和激活状态（全局事件监听）
     ├── MouseTracker.swift          # 全局鼠标追踪（节流）
     ├── TerminalLauncher.swift      # Finder 路径 + 终端启动
     ├── SleepPreventer.swift        # IOKit IOPMAssertion（系统 + 显示器防睡眠）
+    ├── WindowActivationManager.swift  # 引用计数式 NSApp 激活策略
     └── L10n.swift                  # 中英文本地化
 ```
 
@@ -149,12 +151,12 @@ Sources/SwiftEyes/
 - **节流鼠标追踪** — 全局 `NSEvent` 监听 ~12fps 并去重；`onOffsetChanged` 回调仅在瞳孔位置实际变化时触发重绘
 - **热路径无 Combine** — `MouseTracker` 和 `EyesState` 使用普通属性 + 回调替代 `@Published`/`ObservableObject`，消除每帧 Combine 管道开销
 - **合并布局更新** — `scheduleUpdateEyeCenters()` 将同一 runloop 内的坐标重计算合并，避免拖动滑块时重复调用
-- **IOKit 双断言** — 激活时同时持有 `PreventUserIdleSystemSleep` + `PreventUserIdleDisplaySleep`；锁屏或系统睡眠时自动释放；用户意愿通过 UserDefaults 持久化，重启后恢复
-- **AppleScript 缓存** — Finder 路径结果缓存 2 秒，空闲时不执行 AppleScript
-- **脏区域局部重绘** — 鼠标移动时只 invalidate 瞳孔区域（约 30×30px），而非整个视图；眨眼/设置变更才全量重绘
+- **IOKit 双断言** — 激活时同时持有 `PreventUserIdleSystemSleep` + `PreventUserIdleDisplaySleep`；锁屏或系统睡眠时自动释放；用户意愿通过 UserDefaults 持久化，维持模式可配置（始终维持 / 睡眠锁屏不维持 / 从不维持）；始终维持模式在唤醒/解锁时自动重新创建断言
+- **AppleScript 缓存** — Finder 路径结果缓存 2 秒用于菜单显示，空闲时不执行 AppleScript；复制路径和打开终端时强制刷新绕过缓存
+- **脏区域局部重绘** — 鼠标移动时 invalidate 前一帧与当前帧瞳孔区域的并集（避免移动残影），而非整个视图；眨眼/设置变更才全量重绘
 - **`hypot` 优化距离计算** — 用 `hypot(dx, dy)` 替代 `sqrt(dx*dx + dy*dy)`
 - **静态 CGColor** — 眼睛颜色预转换为 `CGColor` 常量，避免每帧 `NSColor.cgColor` 桥接
-- **设置/关于窗口** 临时切换 `NSApp.setActivationPolicy(.regular)` 使窗口到前台，关闭时切回 `.accessory`
+- **`WindowActivationManager`** — 引用计数式 `pushRegular`/`popRegular`，设置和关于窗口同时打开时不会因关闭其中一个而提前切回 `.accessory`；保持 app 不在 Dock 显示的同时让窗口能到前台
 - **L10n 字典** — 内存中翻译表按语言代码索引，无 .strings 文件；`language` 通过 UserDefaults 持久化
 
 ## 许可证

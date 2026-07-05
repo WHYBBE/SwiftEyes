@@ -46,6 +46,9 @@ final class StatusBarController: NSObject {
     }
 
     private func rebuildStatusItem() {
+        if let statusItem {
+            NSStatusBar.system.removeStatusItem(statusItem)
+        }
         if let o = frameObserver {
             NotificationCenter.default.removeObserver(o)
             frameObserver = nil

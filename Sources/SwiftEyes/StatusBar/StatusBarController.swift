@@ -86,7 +86,7 @@ final class StatusBarController: NSObject {
         buildContextMenu()
 
         rightClickMonitor = NSEvent.addLocalMonitorForEvents(matching: .rightMouseUp) { [weak self] event in
-            self?.handleRightClickEvent(event) ?? event
+            self?.handleRightClickEvent(event)
         }
 
         frameObserver = NotificationCenter.default.addObserver(
@@ -157,12 +157,12 @@ final class StatusBarController: NSObject {
         }
     }
 
-    private func handleRightClickEvent(_ event: NSEvent) -> NSEvent {
+    private func handleRightClickEvent(_ event: NSEvent) -> NSEvent? {
         guard let button = statusItem?.button else { return event }
         let point = button.convert(event.locationInWindow, from: nil)
         if button.bounds.contains(point) {
             showContextMenu()
-            return event
+            return nil
         }
         return event
     }

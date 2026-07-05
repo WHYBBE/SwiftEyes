@@ -56,9 +56,32 @@ final class TerminalLauncher {
     }
 
     private func openTerminal(at path: String) {
+        let appPath = terminalPath
+        guard FileManager.default.fileExists(atPath: appPath),
+              appPath.hasSuffix(".app") else {
+            showAlert(message: "终端应用路径无效: \(appPath)")
+            return
+        }
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/usr/bin/open")
-        task.arguments = ["-a", terminalPath, path]
-        try? task.run()
+        task.arguments = ["-a", appPath, path]
+        do {
+            try task.run()
+        } catch {
+            showAlert(message: "打开终端失败: \(error.localizedDescription)")
+        }
+    }
+
+    private func showAlert(message: String) {
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.alertStyle = .warning
+            alert.messageText = "SwiftEyes"
+            alert.informativeText = message
+            alert.addButton(withTitle: "OK")
+            NSApp.setActivationPolicy(.regular)
+            alert.runModal()
+            NSApp.setActivationPolicy(.accessory)
+        }
     }
 }

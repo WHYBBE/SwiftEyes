@@ -9,7 +9,6 @@ final class StatusBarController: NSObject {
     private let sleepPreventer = SleepPreventer()
     private let eyesState = EyesState.shared
     private var contextMenu: NSMenu!
-    private var rightClickMonitor: Any?
     private var frameObserver: Any?
     private var screenChangeObserver: Any?
     private var windowMoveObserver: Any?
@@ -42,10 +41,6 @@ final class StatusBarController: NSObject {
     }
 
     private func rebuildStatusItem() {
-        if let m = rightClickMonitor {
-            NSEvent.removeMonitor(m)
-            rightClickMonitor = nil
-        }
         if let o = frameObserver {
             NotificationCenter.default.removeObserver(o)
             frameObserver = nil
@@ -69,8 +64,9 @@ final class StatusBarController: NSObject {
         button.wantsLayer = true
         button.layer?.backgroundColor = .clear
         button.postsFrameChangedNotifications = true
-
-button.postsFrameChangedNotifications = true
+        button.action = #selector(statusBarButtonClicked)
+        button.target = self
+        button.sendAction(on: [.leftMouseUp, .rightMouseDown])
 
         let view = GooglyEyesNSView()
         view.mouseTracker = mouseTracker
@@ -82,11 +78,6 @@ button.postsFrameChangedNotifications = true
         eyesView = view
 
         buildContextMenu()
-        statusItem.menu = contextMenu
-
-rightClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: .rightMouseUp) { [weak self] event in
-            self?.handleRightClickEvent(event)
-        }
 
         frameObserver = NotificationCenter.default.addObserver(
             forName: NSView.frameDidChangeNotification, object: button, queue: .main
@@ -144,35 +135,47 @@ rightClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: .rightMouseUp) {
         mouseTracker.updateScreenCenters(left: leftCenter, right: rightCenter)
     }
 
+    private var isHandlingRightClick = false
+
     @objc private func statusBarButtonClicked() {
         guard let button = statusItem?.button,
               let event = NSApp.currentEvent else { return }
-
         let point = button.convert(event.locationInWindow, from: nil)
-        if point.x < button.bounds.width / 2 {
-            handleLeftEyeClick()
-        } else {
-            handleRightEyeClick()
-        }
-    }
-
-    private func handleRightClickEvent(_ event: NSEvent) {
-        guard let button = statusItem?.button else { return }
-        let mouseLoc = NSEvent.mouseLocation
-        guard let buttonWindow = button.window else { return }
-        let buttonScreenRect = buttonWindow.convertToScreen(button.convert(button.bounds, to: nil))
-        guard buttonScreenRect.contains(mouseLoc) else { return }
-        let relativeX = mouseLoc.x - buttonScreenRect.minX
-        if relativeX < buttonScreenRect.width / 2 {
-            handleLeftEyeClick()
-        } else {
-            handleRightEyeClick()
+        let isLeftEye = point.x < button.bounds.width / 2
+        switch event.type {
+        case .leftMouseUp:
+            rebuildMenuItems(contextMenu)
+            let menuLocation = button.convert(NSPoint(x: 0, y: button.bounds.height), to: nil)
+            contextMenu.popUp(positioning: nil, at: menuLocation, in: button)
+        case .rightMouseDown:
+            guard !isHandlingRightClick else { return }
+            isHandlingRightClick = true
+            let mouseLoc = NSEvent.mouseLocation
+            guard let buttonWindow = button.window else {
+                isHandlingRightClick = false
+                return
+            }
+            let buttonScreenRect = buttonWindow.convertToScreen(button.convert(button.bounds, to: nil))
+            guard buttonScreenRect.contains(mouseLoc) else {
+                isHandlingRightClick = false
+                return
+            }
+            let relativeX = mouseLoc.x - buttonScreenRect.minX
+            if relativeX < buttonScreenRect.width / 2 {
+                handleLeftEyeClick()
+            } else {
+                handleRightEyeClick()
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                self?.isHandlingRightClick = false
+            }
+        default:
+            break
         }
     }
 
     private func buildContextMenu() {
         contextMenu = NSMenu()
-        contextMenu.delegate = self
         rebuildMenuItems(contextMenu)
     }
 
@@ -267,12 +270,6 @@ private func middleTruncate(_ s: String, maxLength: Int) -> String {
     let head = s.prefix((maxLength - 1) / 2)
     let tail = s.suffix(maxLength - 1 - (maxLength - 1) / 2)
     return "\(head)…\(tail)"
-}
-
-extension StatusBarController: NSMenuDelegate {
-    func menuWillOpen(_ menu: NSMenu) {
-        rebuildMenuItems(menu)
-    }
 }
 
 

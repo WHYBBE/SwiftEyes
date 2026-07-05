@@ -12,7 +12,6 @@ final class AboutWindowController: NSObject, NSWindowDelegate {
     func show() {
         if let window, window.isVisible {
             window.makeKeyAndOrderFront(nil)
-            NSApp.setActivationPolicy(.regular)
             NSApp.activate(ignoringOtherApps: true)
             return
         }
@@ -33,7 +32,7 @@ final class AboutWindowController: NSObject, NSWindowDelegate {
         newWindow.isReleasedWhenClosed = false
         newWindow.delegate = self
         newWindow.makeKeyAndOrderFront(nil)
-        NSApp.setActivationPolicy(.regular)
+        WindowActivationManager.pushRegular()
         NSApp.activate(ignoringOtherApps: true)
         self.window = newWindow
     }
@@ -44,7 +43,7 @@ final class AboutWindowController: NSObject, NSWindowDelegate {
         w.contentView = nil
         self.window = nil
         malloc_zone_pressure_relief(nil, 0)
-        NSApp.setActivationPolicy(.accessory)
+        WindowActivationManager.popRegular()
     }
 }
 

@@ -33,7 +33,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         newWindow.isReleasedWhenClosed = false
         newWindow.delegate = self
         newWindow.makeKeyAndOrderFront(nil)
-        NSApp.setActivationPolicy(.regular)
+        WindowActivationManager.pushRegular()
         NSApp.activate(ignoringOtherApps: true)
         self.window = newWindow
 
@@ -46,7 +46,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
         configCancellable = nil
-        NSApp.setActivationPolicy(.accessory)
+        WindowActivationManager.popRegular()
         window = nil
         malloc_zone_pressure_relief(nil, 0)
     }

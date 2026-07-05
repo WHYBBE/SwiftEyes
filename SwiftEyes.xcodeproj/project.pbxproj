@@ -20,6 +20,7 @@
 		A10011 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011; };
 		A10012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10012; };
 		A10013 /* AboutWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10013; };
+		A10014 /* WindowActivationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10014; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		B10011 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		B10012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B10013 /* AboutWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutWindowController.swift; sourceTree = "<group>"; };
+		B10014 /* WindowActivationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowActivationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 				B10009,
 				B10010,
 				B10011,
+				B10014,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -199,6 +202,7 @@
 				A10010,
 				A10011,
 				A10013,
+				A10014,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -140,8 +140,6 @@ final class StatusBarController: NSObject {
     @objc private func statusBarButtonClicked() {
         guard let button = statusItem?.button,
               let event = NSApp.currentEvent else { return }
-        let point = button.convert(event.locationInWindow, from: nil)
-        let isLeftEye = point.x < button.bounds.width / 2
         switch event.type {
         case .leftMouseUp:
             rebuildMenuItems(contextMenu)

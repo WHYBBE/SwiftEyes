@@ -7,6 +7,7 @@ final class MouseTracker {
     var leftPupilOffset: CGPoint = .zero
     var rightPupilOffset: CGPoint = .zero
 
+    // Single-callback pattern: only one consumer (GooglyEyesNSView for partial redraw).
     var onOffsetChanged: (() -> Void)?
 
     private var monitor: Any?

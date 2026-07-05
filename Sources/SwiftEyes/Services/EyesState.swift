@@ -14,6 +14,7 @@ final class EyesState {
         didSet { if rightBlink != oldValue { onChange?() } }
     }
 
+    // Single-callback pattern: only one consumer (GooglyEyesNSView for redraw).
     var onChange: (() -> Void)?
 
     private var globalLeftDownMonitor: Any?

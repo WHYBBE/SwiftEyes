@@ -50,6 +50,7 @@ final class EyesConfig: ObservableObject {
     var totalItemWidth: Double = 0
     var itemHeight: Double = 0
 
+    // Single-callback pattern: only one consumer (StatusBarController). GooglyEyesNSView uses NotificationCenter independently.
     var onChange: (() -> Void)?
 
     static let didChangeNotification = Notification.Name("EyesConfig.didChange")

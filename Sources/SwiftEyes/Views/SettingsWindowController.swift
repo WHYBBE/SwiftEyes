@@ -3,6 +3,7 @@ import AppKit
 import Combine
 import Darwin
 
+@MainActor
 final class SettingsWindowController: NSObject, NSWindowDelegate {
     static let shared = SettingsWindowController()
 

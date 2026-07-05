@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class MouseTracker {
     static let shared = MouseTracker()
 

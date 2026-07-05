@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 enum L10n {
     static var lang: String { EyesConfig.shared.language }
 

@@ -1,6 +1,7 @@
 import AppKit
 import Darwin
 
+@MainActor
 final class AboutWindowController: NSObject, NSWindowDelegate {
     static let shared = AboutWindowController()
 

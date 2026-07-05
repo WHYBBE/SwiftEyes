@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class EyesState {
     static let shared = EyesState()
 

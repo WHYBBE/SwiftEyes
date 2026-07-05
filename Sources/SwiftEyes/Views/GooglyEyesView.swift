@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class GooglyEyesNSView: NSView {
     var mouseTracker: MouseTracker! {
         didSet { mouseTracker.onOffsetChanged = { [weak self] in self?.invalidatePupilAreas() } }
@@ -31,9 +32,8 @@ final class GooglyEyesNSView: NSView {
     required init?(coder: NSCoder) { fatalError() }
 
     deinit {
-        if let o = configObserver { NotificationCenter.default.removeObserver(o) }
+        NotificationCenter.default.removeObserver(self)
     }
-
     private func invalidatePupilAreas() {
         let leftOffset = mouseTracker?.leftPupilOffset ?? .zero
         let rightOffset = mouseTracker?.rightPupilOffset ?? .zero

@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class StatusBarController: NSObject {
     static let shared = StatusBarController()
 

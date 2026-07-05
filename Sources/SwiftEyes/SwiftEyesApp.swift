@@ -11,6 +11,7 @@ struct SwiftEyesApp: App {
     }
 }
 
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
     let statusBarController = StatusBarController.shared
 

@@ -1,6 +1,7 @@
 import Foundation
 import ServiceManagement
 
+@MainActor
 final class EyesConfig: ObservableObject {
     static let shared = EyesConfig()
 

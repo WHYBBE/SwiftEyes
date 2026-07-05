@@ -17,15 +17,17 @@
 ## 功能
 
 - **眼珠跟随鼠标** — 每只眼睛独立追踪鼠标光标；鼠标在两眼之间时会斗鸡眼 👀
-- **点击眨眼** — 全局左键点击 → 左眼眨眼；右键 → 右眼眨眼。按下保持闭合，松开睁开
-- **左眼 → 打开终端** — 点击左眼，在 Finder 当前窗口路径打开终端
-- **右眼 → 防止睡眠** — 点击右眼切换 macOS 防睡眠模式（激活时瞳孔发红光）；锁屏或系统睡眠时自动关闭；状态跨重启保持
-- **右键菜单** — 右键菜单栏图标：
-  - 显示并复制当前 Finder 路径
-  - 在此路径打开终端
+- **点击眨眼** — 全局左键点击 → 左眼眨眼；全局右键 → 右眼眨眼。按下保持闭合，松开睁开
+- **左键 → 菜单** — 左键点击菜单栏图标：
+  - 显示并复制当前 Finder 路径（中间省略，悬浮显示完整路径）
+  - 打开终端
   - 切换防睡眠
-  - 设置
+  - 设置...
+  - 刷新位置
+  - 关于
   - 退出
+- **右键左眼 → 打开终端** — 右键点击左眼区域，在 Finder 当前窗口路径打开终端
+- **右键右眼 → 防止睡眠** — 右键点击右眼区域切换 macOS 防睡眠模式（激活时高光变红）；锁屏或系统睡眠时自动关闭；状态跨重启保持
 - **可自定义** — 通过设置调整眼睛大小、瞳孔大小、眼距
 - **开机自启** — 在设置中启用（需要 .app bundle）
 - **极低资源占用** — 空闲时 CPU ≈ 0%，内存仅 20–40MB
@@ -74,16 +76,18 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | 操作 | 效果 |
 |------|------|
 | 移动鼠标 | 瞳孔跟随光标方向 |
-| 左键点击（任意位置） | 左眼眨眼（按住保持闭合） |
-| 右键点击（任意位置） | 右眼眨眼（按住保持闭合） |
-| 点击菜单栏左眼区域 | 切换：在 Finder 路径打开终端 |
-| 点击菜单栏右眼区域 | 切换：防止 Mac 睡眠 |
-| 右键点击菜单栏图标 | 上下文菜单 |
+| 左键点击菜单栏图标 | 上下文菜单 |
+| 右键点击左眼区域 | 在 Finder 路径打开终端 |
+| 右键点击右眼区域 | 切换防睡眠 |
+| 全局左键点击（任意位置） | 左眼眨眼（按住保持闭合） |
+| 全局右键点击（任意位置） | 右眼眨眼（按住保持闭合） |
 | **上下文菜单** | |
-| ↳ 当前路径 / 复制路径 | 显示并复制 Finder 前台窗口路径 |
-| ↳ 在此打开终端 | 在 Finder 路径打开终端 |
+| ↳ 路径 / 复制路径 | 显示（中间省略，悬浮显示完整）并复制 Finder 前台窗口路径 |
+| ↳ 打开终端 | 在 Finder 路径打开终端 |
 | ↳ 防睡眠: 开启/关闭 | 切换防睡眠（锁屏/睡眠时自动关闭，重启后恢复） |
-| ↳ 设置 | 打开设置窗口 |
+| ↳ 设置... | 打开设置窗口 |
+| ↳ 刷新位置 | 重新计算眼睛中心位置 |
+| ↳ 关于 | 显示关于窗口（含仓库链接） |
 | ↳ 退出 | 退出应用 |
 
 ## 视觉指示
@@ -92,13 +96,13 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 |------|------|------|
 | 默认 | 黑色瞳孔 + 白色高光 | 黑色瞳孔 + 白色高光 |
 | 终端已打开 | — | — |
-| 防睡眠开启 | — | 红色瞳孔 + 红色发光 + 红色高光 |
+| 防睡眠开启 | — | 黑色瞳孔 + 红色高光 |
 
-> 左眼是瞬时动作（打开终端），无持续激活状态。右眼在防睡眠激活时显示红色发光。防睡眠状态会保存，重启后自动恢复。
+> 左眼是瞬时动作（打开终端），无持续激活状态。右眼在防睡眠激活时高光变红。防睡眠状态会保存，重启后自动恢复。
 
 ### 截图
 
-| 左键眨眼 | 防睡眠（红色发光） | 设置 |
+| 左键眨眼 | 防睡眠（红色高光） | 设置 |
 |---|---|---|
 | ![Left Button Clicked](docs/Left%20Button%20Clicked.png) | ![Prevent Sleep](docs/Prevent%20Sleep.png) | ![Setting](docs/Setting-zh.png) |
 
@@ -109,18 +113,22 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | 眼睛大小 | 11 | 6–18 |
 | 瞳孔大小 | 5 | 2–10 |
 | 眼距 | 6 | 0–20 |
-| 终端应用 | Terminal.app | 任意 .app 路径 |
+| 终端应用 | /System/Applications/Utilities/Terminal.app | 任意 .app 路径 |
 | 语言 | 中文 | 中文 / English |
 | 开机自启 | 关 | 开/关 |
+
+> 每个滑块都有重置按钮（↺）可恢复默认值。
 
 ## 架构
 
 ```
 Sources/SwiftEyes/
 ├── SwiftEyesApp.swift              # @main 入口 + AppDelegate
+├── Info.plist                      # Bundle 元数据 (LSUIElement 等)
+├── SwiftEyes.entitlements          # 沙箱 / Apple Events 权限
 ├── Assets.xcassets/               # 应用图标 & 资源目录
 ├── StatusBar/
-│   └── StatusBarController.swift   # NSStatusItem + GooglyEyesNSView + 右键菜单
+│   └── StatusBarController.swift   # NSStatusItem + GooglyEyesNSView + 菜单
 ├── Views/
 │   ├── GooglyEyesView.swift        # 基于 NSView 的眼睛绘制 (Core Graphics)
 │   ├── SettingsView.swift          # SwiftUI 设置表单
@@ -146,7 +154,7 @@ Sources/SwiftEyes/
 - **脏区域局部重绘** — 鼠标移动时只 invalidate 瞳孔区域（约 30×30px），而非整个视图；眨眼/设置变更才全量重绘
 - **`hypot` 优化距离计算** — 用 `hypot(dx, dy)` 替代 `sqrt(dx*dx + dy*dy)`
 - **静态 CGColor** — 眼睛颜色预转换为 `CGColor` 常量，避免每帧 `NSColor.cgColor` 桥接
-- **设置窗口** 临时切换 `NSApp.setActivationPolicy(.regular)` 使窗口到前台，关闭时切回 `.accessory`
+- **设置/关于窗口** 临时切换 `NSApp.setActivationPolicy(.regular)` 使窗口到前台，关闭时切回 `.accessory`
 - **L10n 字典** — 内存中翻译表按语言代码索引，无 .strings 文件；`language` 通过 UserDefaults 持久化
 
 ## 许可证

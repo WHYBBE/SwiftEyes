@@ -17,15 +17,17 @@ Inspired by [Googly Eyes](https://sindresorhus.com/googly-eyes) by Sindre Sorhus
 ## Features
 
 - **Eyes follow mouse** — Each eye independently tracks the mouse cursor; when the cursor is between the eyes, they go cross-eyed 👀
-- **Blink on click** — Left-click anywhere → left eye blinks; right-click → right eye blinks. Hold to keep closed, release to open
-- **Left eye → Open Terminal** — Click the left eye to launch your preferred terminal at the Finder's current window path
-- **Right eye → Prevent Sleep** — Click the right eye to toggle macOS sleep prevention (highlighted with a red glow when active); auto-deactivates on screen lock or system sleep; state persists across restarts
-- **Context menu** — Right-click the menu bar icon for:
-  - Current Finder path display & copy
-  - Open terminal here
+- **Blink on click** — Global left-click → left eye blinks; global right-click → right eye blinks. Hold to keep closed, release to open
+- **Left-click → Context menu** — Left-click the menu bar icon for:
+  - Current Finder path display (truncated with tooltip) & copy
+  - Open terminal
   - Toggle sleep prevention
-  - Settings
+  - Settings...
+  - Refresh position
+  - About
   - Quit
+- **Right-click left eye → Open Terminal** — Right-click the left eye area to launch your preferred terminal at the Finder's current window path
+- **Right-click right eye → Prevent Sleep** — Right-click the right eye area to toggle macOS sleep prevention (highlight turns red when active); auto-deactivates on screen lock or system sleep; state persists across restarts
 - **Configurable** — Adjust eye size, pupil size, and eye gap via Settings
 - **Launch at Login** — Enable auto-start in Settings (requires .app bundle)
 - **Minimal resources** — ~0% CPU when idle, only 20–40MB memory
@@ -74,16 +76,18 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | Action | Effect |
 |--------|--------|
 | Move mouse | Pupils follow cursor direction |
-| Left-click (anywhere) | Left eye blinks (hold to keep closed) |
-| Right-click (anywhere) | Right eye blinks (hold to keep closed) |
-| Click left eye area on menu bar | Toggle: open terminal at Finder path |
-| Click right eye area on menu bar | Toggle: prevent Mac from sleeping |
-| Right-click menu bar icon | Context menu |
+| Left-click menu bar icon | Context menu |
+| Right-click left eye area | Open terminal at Finder path |
+| Right-click right eye area | Toggle sleep prevention |
+| Global left-click (anywhere) | Left eye blinks (hold to keep closed) |
+| Global right-click (anywhere) | Right eye blinks (hold to keep closed) |
 | **Context menu** | |
-| ↳ Current Path / Copy Path | Show & copy Finder's front window path |
-| ↳ Open Terminal Here | Open terminal at Finder path |
+| ↳ Path / Copy Path | Show (truncated, tooltip for full) & copy Finder's front window path |
+| ↳ Open Terminal | Open terminal at Finder path |
 | ↳ Prevent Sleep: On/Off | Toggle sleep prevention (auto-deactivates on lock/sleep, persists across restarts) |
-| ↳ Settings | Open settings window |
+| ↳ Settings... | Open settings window |
+| ↳ Refresh Position | Recalculate eye centers |
+| ↳ About | Show about window with repo link |
 | ↳ Quit | Quit app |
 
 ## Visual Indicators
@@ -92,13 +96,13 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 |-------|----------|-----------|
 | Default | Black pupil, white highlight | Black pupil, white highlight |
 | Active (terminal opened) | — | — |
-| Active (sleep prevention ON) | — | Red pupil + red glow + red highlight |
+| Active (sleep prevention ON) | — | Black pupil + red highlight |
 
-> The left eye is a one-shot action (open terminal), so it has no persistent active state. The right eye shows a red glow while sleep prevention is active. Sleep prevention state is saved and restored across app restarts.
+> The left eye is a one-shot action (open terminal), so it has no persistent active state. The right eye's highlight turns red while sleep prevention is active. Sleep prevention state is saved and restored across app restarts.
 
 ### Screenshots
 
-| Left-click blink | Prevent sleep (red glow) | Settings |
+| Left-click blink | Prevent sleep (red highlight) | Settings |
 |---|---|---|
 | ![Left Button Clicked](docs/Left%20Button%20Clicked.png) | ![Prevent Sleep](docs/Prevent%20Sleep.png) | ![Setting](docs/Setting-en.png) |
 
@@ -109,15 +113,19 @@ cp -r .build/xcode/Build/Products/Release/SwiftEyes.app /Applications/
 | Eye size | 11 | 6–18 |
 | Pupil size | 5 | 2–10 |
 | Eye gap | 6 | 0–20 |
-| Terminal app | Terminal.app | Any .app path |
+| Terminal app | /System/Applications/Utilities/Terminal.app | Any .app path |
 | Language | 中文 | 中文 / English |
 | Launch at login | Off | On/Off |
+
+> Each slider has a reset button (↺) to restore its default value.
 
 ## Architecture
 
 ```
 Sources/SwiftEyes/
 ├── SwiftEyesApp.swift              # @main entry + AppDelegate
+├── Info.plist                      # Bundle metadata (LSUIElement, etc.)
+├── SwiftEyes.entitlements          # App sandbox / Apple Events entitlements
 ├── Assets.xcassets/               # App icon & asset catalog
 ├── StatusBar/
 │   └── StatusBarController.swift   # NSStatusItem + GooglyEyesNSView + context menu
@@ -146,7 +154,7 @@ Sources/SwiftEyes/
 - **Dirty-rect partial redraw** — Mouse moves only invalidate the pupil area (~30×30px), not the entire view; full redraw reserved for blink/config changes
 - **`hypot` for distance** — Uses `hypot(dx, dy)` instead of `sqrt(dx*dx + dy*dy)` for distance calculation
 - **Static CGColor constants** — Eye colors pre-converted to `CGColor` once, avoiding per-frame `NSColor.cgColor` bridging
-- **`NSApp.setActivationPolicy(.regular)`** temporarily when settings window opens, `.accessory` when closed — keeps the app out of the Dock while allowing settings to come to front
+- **`NSApp.setActivationPolicy(.regular)`** temporarily when settings or about window opens, `.accessory` when closed — keeps the app out of the Dock while allowing windows to come to front
 - **L10n dictionary** — In-memory translation table keyed by language code, no .strings files; `language` persisted via UserDefaults
 
 ## License

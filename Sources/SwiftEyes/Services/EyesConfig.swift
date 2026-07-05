@@ -46,12 +46,17 @@ final class EyesConfig: ObservableObject {
     }
 
     private func updateLaunchAtLogin() {
-        if #available(macOS 13.0, *) {
+        guard #available(macOS 13.0, *) else { return }
+        do {
             if launchAtLogin {
-                try? SMAppService.mainApp.register()
+                try SMAppService.mainApp.register()
             } else {
-                try? SMAppService.mainApp.unregister()
+                try SMAppService.mainApp.unregister()
             }
+        } catch {
+            print("Launch at login \(launchAtLogin ? "register" : "unregister") failed: \(error).")
+            launchAtLogin = false
+            UserDefaults.standard.set(false, forKey: "launchAtLogin")
         }
     }
 

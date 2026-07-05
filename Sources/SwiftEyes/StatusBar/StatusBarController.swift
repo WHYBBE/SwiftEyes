@@ -70,9 +70,7 @@ final class StatusBarController: NSObject {
         button.layer?.backgroundColor = .clear
         button.postsFrameChangedNotifications = true
 
-        button.action = #selector(statusBarButtonClicked)
-        button.target = self
-        button.sendAction(on: [.leftMouseUp])
+button.postsFrameChangedNotifications = true
 
         let view = GooglyEyesNSView()
         view.mouseTracker = mouseTracker
@@ -84,8 +82,9 @@ final class StatusBarController: NSObject {
         eyesView = view
 
         buildContextMenu()
+        statusItem.menu = contextMenu
 
-        rightClickMonitor = NSEvent.addLocalMonitorForEvents(matching: .rightMouseUp) { [weak self] event in
+rightClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: .rightMouseUp) { [weak self] event in
             self?.handleRightClickEvent(event)
         }
 
@@ -157,14 +156,18 @@ final class StatusBarController: NSObject {
         }
     }
 
-    private func handleRightClickEvent(_ event: NSEvent) -> NSEvent? {
-        guard let button = statusItem?.button else { return event }
-        let point = button.convert(event.locationInWindow, from: nil)
-        if button.bounds.contains(point) {
-            showContextMenu()
-            return nil
+    private func handleRightClickEvent(_ event: NSEvent) {
+        guard let button = statusItem?.button else { return }
+        let mouseLoc = NSEvent.mouseLocation
+        guard let buttonWindow = button.window else { return }
+        let buttonScreenRect = buttonWindow.convertToScreen(button.convert(button.bounds, to: nil))
+        guard buttonScreenRect.contains(mouseLoc) else { return }
+        let relativeX = mouseLoc.x - buttonScreenRect.minX
+        if relativeX < buttonScreenRect.width / 2 {
+            handleLeftEyeClick()
+        } else {
+            handleRightEyeClick()
         }
-        return event
     }
 
     private func buildContextMenu() {
@@ -177,47 +180,43 @@ final class StatusBarController: NSObject {
         menu.items.removeAll()
 
         let finderPath = terminalLauncher.finderPath ?? L10n.tr("none")
-
-        let pathLabel = NSMenuItem(title: L10n.tr("menu_path_label", finderPath), action: nil, keyEquivalent: "")
+        let truncatedPath = middleTruncate(finderPath, maxLength: 20)
+        let pathLabel = NSMenuItem(title: L10n.tr("menu_path_label", truncatedPath), action: nil, keyEquivalent: "")
         pathLabel.isEnabled = false
+        pathLabel.toolTip = finderPath != L10n.tr("none") ? L10n.tr("menu_path_label", finderPath) : nil
         menu.addItem(pathLabel)
 
-        let copyItem = NSMenuItem(title: L10n.tr("menu_copy_path"), action: #selector(copyFinderPath), keyEquivalent: "c")
+        let copyItem = NSMenuItem(title: L10n.tr("menu_copy_path"), action: #selector(copyFinderPath), keyEquivalent: "")
         copyItem.target = self
         menu.addItem(copyItem)
 
-        let terminalItem = NSMenuItem(title: L10n.tr("menu_open_terminal"), action: #selector(openTerminalHere), keyEquivalent: "t")
+        let terminalItem = NSMenuItem(title: L10n.tr("menu_open_terminal"), action: #selector(openTerminalHere), keyEquivalent: "")
         terminalItem.target = self
         menu.addItem(terminalItem)
 
         menu.addItem(NSMenuItem.separator())
 
         let sleepTitle = sleepPreventer.isActive ? L10n.tr("menu_sleep_on") : L10n.tr("menu_sleep_off")
-        let sleepItem = NSMenuItem(title: sleepTitle, action: #selector(toggleSleepPrevention), keyEquivalent: "s")
+        let sleepItem = NSMenuItem(title: sleepTitle, action: #selector(toggleSleepPrevention), keyEquivalent: "")
         sleepItem.target = self
         menu.addItem(sleepItem)
 
         menu.addItem(NSMenuItem.separator())
 
-        let settingsItem = NSMenuItem(title: L10n.tr("menu_settings"), action: #selector(openSettings), keyEquivalent: ",")
+        let settingsItem = NSMenuItem(title: L10n.tr("menu_settings"), action: #selector(openSettings), keyEquivalent: "")
         settingsItem.target = self
         menu.addItem(settingsItem)
         menu.addItem(NSMenuItem.separator())
-        let refreshItem = NSMenuItem(title: L10n.tr("menu_refresh"), action: #selector(refreshPosition), keyEquivalent: "r")
+        let refreshItem = NSMenuItem(title: L10n.tr("menu_refresh"), action: #selector(refreshPosition), keyEquivalent: "")
         refreshItem.target = self
         menu.addItem(refreshItem)
         let aboutItem = NSMenuItem(title: L10n.tr("menu_about"), action: #selector(showAbout), keyEquivalent: "")
         aboutItem.target = self
         menu.addItem(aboutItem)
         menu.addItem(NSMenuItem.separator())
-        let quitItem = NSMenuItem(title: L10n.tr("menu_quit"), action: #selector(quitApp), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: L10n.tr("menu_quit"), action: #selector(quitApp), keyEquivalent: "")
         quitItem.target = self
         menu.addItem(quitItem)
-    }
-
-    private func showContextMenu() {
-        guard let button = statusItem?.button else { return }
-        contextMenu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height + 4), in: button)
     }
 
     private func handleLeftEyeClick() {
@@ -263,8 +262,17 @@ final class StatusBarController: NSObject {
     }
 }
 
+private func middleTruncate(_ s: String, maxLength: Int) -> String {
+    guard s.count > maxLength else { return s }
+    let head = s.prefix((maxLength - 1) / 2)
+    let tail = s.suffix(maxLength - 1 - (maxLength - 1) / 2)
+    return "\(head)…\(tail)"
+}
+
 extension StatusBarController: NSMenuDelegate {
     func menuWillOpen(_ menu: NSMenu) {
         rebuildMenuItems(menu)
     }
 }
+
+

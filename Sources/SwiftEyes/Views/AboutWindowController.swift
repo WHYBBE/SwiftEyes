@@ -98,7 +98,6 @@ private final class AboutView: NSView {
         repoLink.textColor = .linkColor
         repoLink.alignment = .center
         repoLink.translatesAutoresizingMaskIntoConstraints = false
-        repoLink.translatesAutoresizingMaskIntoConstraints = false
         let clickGesture = NSClickGestureRecognizer(target: self, action: #selector(openRepo))
         repoLink.addGestureRecognizer(clickGesture)
 

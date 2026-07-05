@@ -210,12 +210,12 @@ final class StatusBarController: NSObject {
         sleepItem.target = self
         menu.addItem(sleepItem)
 
-        let settingsItem = NSMenuItem(title: L10n.tr("menu_settings"), action: #selector(openSettings), keyEquivalent: "")
-        settingsItem.target = self
-        menu.addItem(settingsItem)
         let refreshItem = NSMenuItem(title: L10n.tr("menu_refresh"), action: #selector(refreshPosition), keyEquivalent: "")
         refreshItem.target = self
         menu.addItem(refreshItem)
+        let settingsItem = NSMenuItem(title: L10n.tr("menu_settings"), action: #selector(openSettings), keyEquivalent: "")
+        settingsItem.target = self
+        menu.addItem(settingsItem)
         let aboutItem = NSMenuItem(title: L10n.tr("menu_about"), action: #selector(showAbout), keyEquivalent: "")
         aboutItem.target = self
         menu.addItem(aboutItem)

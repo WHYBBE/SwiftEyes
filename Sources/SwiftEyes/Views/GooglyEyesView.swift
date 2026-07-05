@@ -41,7 +41,9 @@ final class GooglyEyesNSView: NSView {
         let pr = CGFloat(eyesConfig?.pupilRadius ?? 5) + 2
 
         let dirtyLeft = pupilDirtyRect(center: leftEyeCenter, offset: prevLeftOffset, pr: pr)
+            .union(pupilDirtyRect(center: leftEyeCenter, offset: leftOffset, pr: pr))
         let dirtyRight = pupilDirtyRect(center: rightEyeCenter, offset: prevRightOffset, pr: pr)
+            .union(pupilDirtyRect(center: rightEyeCenter, offset: rightOffset, pr: pr))
 
         prevLeftOffset = leftOffset
         prevRightOffset = rightOffset
@@ -68,7 +70,9 @@ final class GooglyEyesNSView: NSView {
 
     private func pupilDirtyRect(center: NSPoint, offset: CGPoint, pr: CGFloat) -> NSRect {
         let margin: CGFloat = 4
-        return NSRect(x: center.x - pr - margin, y: center.y - pr - margin,
+        let px = center.x + offset.x
+        let py = center.y - offset.y
+        return NSRect(x: px - pr - margin, y: py - pr - margin,
                        width: (pr + margin) * 2, height: (pr + margin) * 2)
     }
 

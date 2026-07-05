@@ -22,12 +22,17 @@ final class TerminalLauncher {
         return path.isEmpty ? nil : path
     }
 
+    var currentFinderPath: String? {
+        cachedPath = nil
+        return finderPath
+    }
+
     func toggle() {
         launchTerminalAtFinderPath()
     }
 
     func launchTerminalAtFinderPath() {
-        guard let path = finderPath else {
+        guard let path = currentFinderPath else {
             openTerminal(at: NSHomeDirectory())
             return
         }

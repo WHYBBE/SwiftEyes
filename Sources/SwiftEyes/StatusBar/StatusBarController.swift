@@ -235,7 +235,7 @@ final class StatusBarController: NSObject {
     }
 
     @objc private func copyFinderPath() {
-        let path = terminalLauncher.finderPath ?? ""
+        let path = terminalLauncher.currentFinderPath ?? ""
         if !path.isEmpty {
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(path, forType: .string)

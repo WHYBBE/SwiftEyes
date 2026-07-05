@@ -18,21 +18,9 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section(L10n.tr("appearance")) {
-                HStack {
-                    Text(L10n.tr("eye_size"))
-                    Slider(value: $config.eyeRadius, in: 6...18, step: 1)
-                    Text("\(Int(config.eyeRadius))").frame(width: 28)
-                }
-                HStack {
-                    Text(L10n.tr("pupil_size"))
-                    Slider(value: $config.pupilRadius, in: 2...10, step: 0.5)
-                    Text("\(config.pupilRadius, specifier: "%.1f")").frame(width: 36)
-                }
-                HStack {
-                    Text(L10n.tr("eye_gap"))
-                    Slider(value: $config.eyeGap, in: 0...20, step: 1)
-                    Text("\(Int(config.eyeGap))").frame(width: 28)
-                }
+                sliderRow(L10n.tr("eye_size"), value: $config.eyeRadius, range: 6...18, step: 1, display: { Text("\(Int(config.eyeRadius))") }, default: 11)
+                sliderRow(L10n.tr("pupil_size"), value: $config.pupilRadius, range: 2...10, step: 0.5, display: { Text("\(config.pupilRadius, specifier: "%.1f")") }, default: 5)
+                sliderRow(L10n.tr("eye_gap"), value: $config.eyeGap, range: 0...20, step: 1, display: { Text("\(Int(config.eyeGap))") }, default: 6)
 
                 if config.pupilRadius >= config.eyeRadius - 1 {
                     Text(L10n.tr("pupil_too_large")).foregroundColor(.orange).font(.caption)
@@ -85,7 +73,21 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 440, height: 400)
+        .frame(width: 520, height: 420)
         .id(l)
+    }
+
+    private func sliderRow(_ label: String, value: Binding<Double>, range: ClosedRange<Double>, step: Double, display: @escaping () -> Text, default defaultValue: Double) -> some View {
+        HStack(spacing: 8) {
+            Text(label).frame(width: 60, alignment: .leading)
+            Slider(value: value, in: range, step: step)
+                .layoutPriority(1)
+            display().frame(width: 36)
+            Button(action: { value.wrappedValue = defaultValue }) {
+                Image(systemName: "arrow.counterclockwise")
+            }
+            .buttonStyle(.borderless)
+            .help(L10n.tr("reset"))
+        }
     }
 }

@@ -143,8 +143,8 @@ final class StatusBarController: NSObject {
         switch event.type {
         case .leftMouseUp:
             rebuildMenuItems(contextMenu)
-            let menuLocation = button.convert(NSPoint(x: 0, y: button.bounds.height), to: nil)
-            contextMenu.popUp(positioning: nil, at: menuLocation, in: button)
+            // y: button.bounds.height 在按钮顶部弹出菜单；macOS 27 略偏上但可接受，macOS 15 位置正常
+            contextMenu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height), in: button)
         case .rightMouseDown:
             guard !isHandlingRightClick else { return }
             isHandlingRightClick = true
@@ -202,12 +202,9 @@ final class StatusBarController: NSObject {
         sleepItem.target = self
         menu.addItem(sleepItem)
 
-        menu.addItem(NSMenuItem.separator())
-
         let settingsItem = NSMenuItem(title: L10n.tr("menu_settings"), action: #selector(openSettings), keyEquivalent: "")
         settingsItem.target = self
         menu.addItem(settingsItem)
-        menu.addItem(NSMenuItem.separator())
         let refreshItem = NSMenuItem(title: L10n.tr("menu_refresh"), action: #selector(refreshPosition), keyEquivalent: "")
         refreshItem.target = self
         menu.addItem(refreshItem)

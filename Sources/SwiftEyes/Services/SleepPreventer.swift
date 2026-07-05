@@ -3,6 +3,7 @@ import Foundation
 import IOKit
 import IOKit.pwr_mgt
 
+@MainActor
 final class SleepPreventer {
     var isActive: Bool = false
     var onDeactivate: (() -> Void)?
@@ -13,59 +14,116 @@ final class SleepPreventer {
     private var hasDisplayAssertion = false
     private var lockObserver: Any?
     private var sleepObserver: Any?
+    private var unlockObserver: Any?
+    private var wakeObserver: Any?
 
     init() {
         desiredActive = UserDefaults.standard.bool(forKey: "sleepPreventionActive")
     }
 
     func toggle() {
-        desiredActive = !desiredActive
-        UserDefaults.standard.set(desiredActive, forKey: "sleepPreventionActive")
-        isActive = desiredActive
-        if isActive {
-            preventSleep()
-            startMonitoring()
+        let newDesired = !desiredActive
+        if newDesired {
+            guard createAssertions() else { return }
+            desiredActive = true
+            persistDesiredState()
+            isActive = true
+            startSleepLockMonitoring()
         } else {
-            stopMonitoring()
-            allowSleep()
+            desiredActive = false
+            persistDesiredState()
+            isActive = false
+            stopAllMonitoring()
+            releaseAssertions()
         }
     }
 
-    func restore() {
+    func restoreOnLaunch() {
         guard desiredActive else { return }
+        guard createAssertions() else {
+            desiredActive = false
+            persistDesiredState()
+            return
+        }
         isActive = true
-        preventSleep()
-        startMonitoring()
+        startSleepLockMonitoring()
     }
 
-    private func startMonitoring() {
-        guard lockObserver == nil && sleepObserver == nil else { return }
+    private func persistDesiredState() {
+        let mode = EyesConfig.shared.sleepPersistMode
+        if mode == .neverMaintain {
+            UserDefaults.standard.removeObject(forKey: "sleepPreventionActive")
+        } else {
+            UserDefaults.standard.set(desiredActive, forKey: "sleepPreventionActive")
+        }
+    }
+
+    private func startSleepLockMonitoring() {
+        guard lockObserver == nil else { return }
         let dnc = DistributedNotificationCenter.default()
         lockObserver = dnc.addObserver(forName: Notification.Name("com.apple.screenIsLocked"), object: nil, queue: .main) { [weak self] _ in
-            self?.forceDeactivate()
+            Task { @MainActor in self?.handleSleepOrLock() }
         }
         let nc = NSWorkspace.shared.notificationCenter
         sleepObserver = nc.addObserver(forName: NSWorkspace.willSleepNotification, object: nil, queue: .main) { [weak self] _ in
-            self?.forceDeactivate()
+            Task { @MainActor in self?.handleSleepOrLock() }
+        }
+        startWakeUnlockMonitoring()
+    }
+
+    private func startWakeUnlockMonitoring() {
+        guard unlockObserver == nil else { return }
+        let mode = EyesConfig.shared.sleepPersistMode
+        guard mode == .alwaysMaintain, desiredActive else { return }
+        let dnc = DistributedNotificationCenter.default()
+        unlockObserver = dnc.addObserver(forName: Notification.Name("com.apple.screenIsUnlocked"), object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.handleWakeOrUnlock() }
+        }
+        let nc = NSWorkspace.shared.notificationCenter
+        wakeObserver = nc.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.handleWakeOrUnlock() }
         }
     }
 
-    private func stopMonitoring() {
+    private func stopSleepLockMonitoring() {
         let dnc = DistributedNotificationCenter.default()
         if let o = lockObserver { dnc.removeObserver(o); lockObserver = nil }
         let nc = NSWorkspace.shared.notificationCenter
         if let o = sleepObserver { nc.removeObserver(o); sleepObserver = nil }
+        stopWakeUnlockMonitoring()
     }
 
-    private func forceDeactivate() {
-        allowSleep()
+    private func stopWakeUnlockMonitoring() {
+        let dnc = DistributedNotificationCenter.default()
+        if let o = unlockObserver { dnc.removeObserver(o); unlockObserver = nil }
+        let nc = NSWorkspace.shared.notificationCenter
+        if let o = wakeObserver { nc.removeObserver(o); wakeObserver = nil }
+    }
+
+    private func stopAllMonitoring() {
+        stopSleepLockMonitoring()
+    }
+
+    private func handleSleepOrLock() {
+        releaseAssertions()
         isActive = false
         onDeactivate?()
-        stopMonitoring()
+        stopWakeUnlockMonitoring()
+        startWakeUnlockMonitoring()
     }
 
-    private func preventSleep() {
-        guard !hasSystemAssertion else { return }
+    private func handleWakeOrUnlock() {
+        let mode = EyesConfig.shared.sleepPersistMode
+        guard mode == .alwaysMaintain, desiredActive else { return }
+        guard createAssertions() else { return }
+        isActive = true
+        onActivate?()
+    }
+
+    var onActivate: (() -> Void)?
+
+    private func createAssertions() -> Bool {
+        guard !hasSystemAssertion else { return true }
         let reason = "SwiftEyes keeping system awake" as CFString
 
         let systemResult = IOPMAssertionCreateWithName(
@@ -92,12 +150,10 @@ final class SleepPreventer {
             print("Failed to create display sleep assertion: \(displayResult)")
         }
 
-        if !hasSystemAssertion && !hasDisplayAssertion {
-            isActive = false
-        }
+        return hasSystemAssertion || hasDisplayAssertion
     }
 
-    private func allowSleep() {
+    private func releaseAssertions() {
         if hasSystemAssertion {
             IOPMAssertionRelease(systemAssertionID)
             hasSystemAssertion = false
@@ -111,7 +167,6 @@ final class SleepPreventer {
     }
 
     deinit {
-        stopMonitoring()
-        allowSleep()
+        NotificationCenter.default.removeObserver(self)
     }
 }

@@ -25,7 +25,11 @@ final class StatusBarController: NSObject {
             guard let self else { return }
             self.eyesState.rightEyeActive = false
         }
-        sleepPreventer.restore()
+        sleepPreventer.onActivate = { [weak self] in
+            guard let self else { return }
+            self.eyesState.rightEyeActive = true
+        }
+        sleepPreventer.restoreOnLaunch()
         if sleepPreventer.isActive {
             eyesState.rightEyeActive = true
         }

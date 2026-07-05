@@ -1,6 +1,20 @@
 import Foundation
 import ServiceManagement
 
+enum SleepPersistMode: Int, CaseIterable {
+    case alwaysMaintain = 0
+    case noMaintainOnSleep = 1
+    case neverMaintain = 2
+
+    var labelKey: String {
+        switch self {
+        case .alwaysMaintain: return "sleep_mode_always"
+        case .noMaintainOnSleep: return "sleep_mode_no_sleep"
+        case .neverMaintain: return "sleep_mode_never"
+        }
+    }
+}
+
 @MainActor
 final class EyesConfig: ObservableObject {
     static let shared = EyesConfig()
@@ -26,6 +40,10 @@ final class EyesConfig: ObservableObject {
         didSet { UserDefaults.standard.set(language, forKey: "language"); onChange?() }
     }
 
+    @Published var sleepPersistMode: SleepPersistMode {
+        didSet { UserDefaults.standard.set(sleepPersistMode.rawValue, forKey: "sleepPersistMode") }
+    }
+
     let isInAppBundle: Bool
 
     var maxPupilOffset: Double = 0
@@ -43,6 +61,7 @@ final class EyesConfig: ObservableObject {
         eyeGap = UserDefaults.standard.object(forKey: "eyeGap") as? Double ?? 6
         launchAtLogin = isInAppBundle && (UserDefaults.standard.object(forKey: "launchAtLogin") as? Bool ?? false)
         language = UserDefaults.standard.string(forKey: "language") ?? "zh"
+        sleepPersistMode = SleepPersistMode(rawValue: UserDefaults.standard.integer(forKey: "sleepPersistMode")) ?? .noMaintainOnSleep
         updateDerived()
     }
 

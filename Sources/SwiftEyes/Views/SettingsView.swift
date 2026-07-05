@@ -38,6 +38,11 @@ struct SettingsView: View {
                     Text(L10n.tr("launch_at_login_hint"))
                         .foregroundColor(.secondary).font(.caption)
                 }
+                Picker(L10n.tr("sleep_mode"), selection: $config.sleepPersistMode) {
+                    ForEach(SleepPersistMode.allCases, id: \.self) { mode in
+                        Text(L10n.tr(mode.labelKey)).tag(mode)
+                    }
+                }
             }
 
             Section(L10n.tr("terminal_app")) {
